@@ -7,7 +7,7 @@ auto sub(auto a, auto b) {
 }
 int main() {
 
-    cout << soma(10, 5) << '\n';
+    cout << sub(10, 5) << '\n';
 
     return 0;
 }
