@@ -43,21 +43,21 @@ bool contar_x(vector<int> stress) {
     return false;
 }
 
-bool procurar_valor_x(vector<int> stress, int index) { // Também será usada para procurar_valor_x_apos
+bool procurar_valor_x(vector<int> stress, int pos) { // Também será usada para procurar_valor_x_apos
     int valor = 0;
 
     cout << "Digite o valor que deseja procurar a posicao na fila: ";
     cin >> valor;
 
     if(valor >= -99 && valor <= 99) {
-        auto itr = find(stress.begin(), stress.end(), valor);
-        advance (itr, index);
+        auto bg = stress.begin();
+        advance (bg, pos);
+        auto itr = find(bg, stress.end(), valor);
 
         if (itr != stress.end()) {
-            cout << "Valor " << valor << " foi encontrado na posicao " << (itr - stress.begin()) + 1 << " da fila." << "\n";
-        }
-        else {
-            cout << "Valor não foi encontrado na fila";
+            cout << "Valor " << valor << " foi encontrado na posicao " << (itr - stress.begin() + 1) << " da fila." << "\n";
+        } else {
+            cout << "Valor nao foi encontrado na fila";
         }
 
         return true;
@@ -68,11 +68,9 @@ bool procurar_valor_x(vector<int> stress, int index) { // Também será usada pa
     return false;
 }
 
-// bool procurar_valor_x_apos(vector<int> stress) {
-//     return false;
-// }
-
 bool selecionar_item(char item, vector<int> stress) {
+    int pos = 0;
+
     switch (item) {
     case 'a':
         return existe_valor_x(stress);
@@ -85,14 +83,14 @@ bool selecionar_item(char item, vector<int> stress) {
         break;
     case 'd':
         cout << "Digite a posicao que deseja comecar a busca: ";
-        int index = 0;
-        cin << index;
+        cin >> pos;
 
-        if(index < 0 || index > stress.size()) {
-            cout << "Digite um valor válido." << "\n";
+        if(pos < 0 || pos > (int) stress.size()) {
+            cout << "Digite um valor valido." << "\n";
             return false;
+        }
 
-        return procurar_valor_x_apos(stress, index);
+        return procurar_valor_x(stress, pos);
         break;
     default:
         break;
