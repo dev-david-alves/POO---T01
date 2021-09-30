@@ -8,7 +8,6 @@ bool existe_valor_x(vector<int> stress) {
     int valor = 0;
 
     cout << "Digite o valor que deseja procurar na fila: ";
-
     cin >> valor;
 
     if(valor >= -99 && valor <= 99) {
@@ -26,17 +25,52 @@ bool existe_valor_x(vector<int> stress) {
     return false;
 }
 
-bool contar_x() {
+bool contar_x(vector<int> stress) {
+    int valor = 0;
+
+    cout << "Digite o valor que deseja contar na fila: ";
+    cin >> valor;
+
+    if(valor >= -99 && valor <= 99) {
+        int counter = count(stress.begin(), stress.end(), valor);
+        cout << "O valor " << valor << " aparece " << counter << (counter > 1? " vezes" : " vez") << " na fila." << "\n";
+
+        return true;
+    } else {
+        cout << "Digite um valor entre -99 e 99." << "\n";
+    }
+
     return false;
 }
 
-bool procurar_valor_x() {
+bool procurar_valor_x(vector<int> stress, int index) { // Também será usada para procurar_valor_x_apos
+    int valor = 0;
+
+    cout << "Digite o valor que deseja procurar a posicao na fila: ";
+    cin >> valor;
+
+    if(valor >= -99 && valor <= 99) {
+        auto itr = find(stress.begin(), stress.end(), valor);
+        advance (itr, index);
+
+        if (itr != stress.end()) {
+            cout << "Valor " << valor << " foi encontrado na posicao " << (itr - stress.begin()) + 1 << " da fila." << "\n";
+        }
+        else {
+            cout << "Valor não foi encontrado na fila";
+        }
+
+        return true;
+    } else {
+        cout << "Digite um valor entre -99 e 99." << "\n";
+    }
+
     return false;
 }
 
-bool procurar_valor_x_apos() {
-    return false;
-}
+// bool procurar_valor_x_apos(vector<int> stress) {
+//     return false;
+// }
 
 bool selecionar_item(char item, vector<int> stress) {
     switch (item) {
@@ -44,13 +78,21 @@ bool selecionar_item(char item, vector<int> stress) {
         return existe_valor_x(stress);
         break;
     case 'b':
-        return contar_x();
+        return contar_x(stress);
         break;
     case 'c':
-        return procurar_valor_x();
+        return procurar_valor_x(stress, 0);
         break;
     case 'd':
-        return procurar_valor_x_apos();
+        cout << "Digite a posicao que deseja comecar a busca: ";
+        int index = 0;
+        cin << index;
+
+        if(index < 0 || index > stress.size()) {
+            cout << "Digite um valor válido." << "\n";
+            return false;
+
+        return procurar_valor_x_apos(stress, index);
         break;
     default:
         break;
@@ -65,14 +107,15 @@ int main() {
     char item;
 
     vector<char> items{'a', 'b', 'c', 'd'};
-    vector<int> stress{-11, 1, 99, 2};
+    vector<int> stress{-11, 1, 99, -11, 2};
 
     cout << "Deseja coletar informacoes sobre a fila? Digite a letra 's' ou 'S' para continuar." << "\n";
     cin >> resposta;
 
     while(resposta == 's' || resposta == 'S') {
         cout << "Selecione um item entre as perguntas ------------->" << "\n";
-        while(true) { // Condição de existência virá aqui!
+
+        while(true) { 
             cout << "Bloco ---------------->" << "\n";
             cout << "(a) Alguem com o valor X esta na fila?" << "\n";
             cout << "(b) Quantas vezes o valor X apareceu na fila?" << "\n";
