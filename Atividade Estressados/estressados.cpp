@@ -4,39 +4,59 @@ using namespace std;
 
 // Funções de Busca
 
-string existe_valor_x() {
-    return "nao";
+bool existe_valor_x(vector<int> stress) {
+    int valor = 0;
+
+    cout << "Digite o valor que deseja procurar na fila: ";
+
+    cin >> valor;
+
+    if(valor >= -99 && valor <= 99) {
+        if(find(stress.begin(), stress.end(), valor) != stress.end()) {
+            cout << "Existe esse valor na fila." << "\n";
+        } else {
+            cout << "Nao existe esse valor na fila." << "\n";
+        }
+
+        return true;
+    } else {
+        cout << "Digite um valor entre -99 e 99." << "\n";
+    }
+
+    return false;
 }
 
-string contar_x() {
-    return "nao";
+bool contar_x() {
+    return false;
 }
 
-string procurar_valor_x() {
-    return "nao";
+bool procurar_valor_x() {
+    return false;
 }
 
-string procurar_valor_x_apos() {
-    return "nao";
+bool procurar_valor_x_apos() {
+    return false;
 }
 
-void selecionar_item(char item) {
+bool selecionar_item(char item, vector<int> stress) {
     switch (item) {
     case 'a':
-        existe_valor_x();
+        return existe_valor_x(stress);
         break;
     case 'b':
-        contar_x();
+        return contar_x();
         break;
     case 'c':
-        procurar_valor_x();
+        return procurar_valor_x();
         break;
     case 'd':
-        procurar_valor_x_apos();
+        return procurar_valor_x_apos();
         break;
     default:
         break;
     }
+
+    return false;
 }
 
 int main() {
@@ -45,6 +65,7 @@ int main() {
     char item;
 
     vector<char> items{'a', 'b', 'c', 'd'};
+    vector<int> stress{-11, 1, 99, 2};
 
     cout << "Deseja coletar informacoes sobre a fila? Digite a letra 's' ou 'S' para continuar." << "\n";
     cin >> resposta;
@@ -58,12 +79,11 @@ int main() {
             cout << "(c) Em que posicao da fila aparece X pela primeira vez?" << "\n";
             cout << "(d) Dada a posicao para iniciar a busca, qual a proxima posicao em que aparece X?" << "\n";
 
-            cout << "Digite sua resposta: ";
+            cout << "Item: ";
             cin >> item;
 
             if(find(items.begin(), items.end(), item) != items.end()) {
-                selecionar_item(item);
-                break;
+                if(selecionar_item(item, stress)) break;
             } else {     
                 cout << "Selecione um item existente na lista." << "\n";
             }
