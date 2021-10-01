@@ -225,7 +225,3 @@ int main() {
 
     return 0;
 }
-
-// Digite s ou S para continuar
-// Positivo = Homens
-// Negativo = Mulheres
