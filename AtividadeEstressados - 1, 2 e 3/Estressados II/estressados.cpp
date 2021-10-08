@@ -7,6 +7,8 @@
 
 #include "../testador.hpp"
 
+// Sempre coloco um dos testes errados para testar --->
+
 // Funções de Filter
 
 std::vector<int> clone(const std::vector<int>& v) {
@@ -25,7 +27,7 @@ std::vector<int> pegar_homens(const std::vector<int>& v) {
     std::vector<int> homens;
     for(int i = 0; i < (int) v.size(); i++)
         if(v[i] > 0)
-            homens.push_back(i);
+            homens.push_back(i); // Pega a posição dos homens
 
     return homens;
 }
@@ -41,7 +43,7 @@ std::vector<int> pegar_calmos(const std::vector<int>& v) {
     std::vector<int> calmos;
     for(int i = 0; i < (int) v.size(); i++)
         if(abs(v[i]) <  10)
-            calmos.push_back(i);
+            calmos.push_back(i); // Pega a posição dos calmos
 
     return calmos;
 }
@@ -57,7 +59,7 @@ std::vector<int> pegar_mulheres_calmas(const std::vector<int>& v) {
     std::vector<int> mulheres_calmas;
     for(int i = 0; i < (int) v.size(); i++)
         if(v[i] < 0 && abs(v[i]) < 10)
-            mulheres_calmas.push_back(i);
+            mulheres_calmas.push_back(i); // Pega a posição das mulheres calmas
 
     return mulheres_calmas;
 }
@@ -116,7 +118,7 @@ int sortear(const std::vector<int>& v) {
 }
 
 void teste_sortear() {
-    std::cout << "teste_inverter_inplace\n";
+    std::cout << "teste_sortear\n";
 
     std::cout << sortear({-1, -34, 2, -4, 55}) << "\n";
     std::cout << sortear({44, -34, 22, 32, 5}) << "\n";
@@ -129,7 +131,7 @@ void embaralhar(std::vector<int>& v) {
     int i_1 {};
     int i_2 {};
 
-    for(int i = 0; i < (int) v.size() / 2; i++) {
+    for(int i = 0; i < (int) v.size(); i++) {
         i_1 = rand() % size;
         i_2 = rand() % size;
 
@@ -187,7 +189,7 @@ std::vector<int> exclusivos(const std::vector<int>& v) {
     std::vector<int> novo_vetor;
 
     for(int i = 0; i < (int) v.size(); i++) {
-        if(find(novo_vetor.begin(), novo_vetor.end(), v[i]) == novo_vetor.end())
+        if(find(novo_vetor.begin(), novo_vetor.end(), v[i]) == novo_vetor.end()) // Se não encontrar no novo_vetor
             novo_vetor.push_back(v[i]);
     }
 
@@ -196,8 +198,8 @@ std::vector<int> exclusivos(const std::vector<int>& v) {
 
 void teste_exclusivos() {
     std::cout << "teste_exclusivos\n";
-    testar(exclusivos({1, 3, 4, 3, -1, -2, -2}), {1, 4, -1});
-    testar(exclusivos({6, -2, -2, -3, 4, 5, 3, 4}), {6, -3, 5, 3});
+    testar(exclusivos({1, 3, 4, 3, -1, -2, -2}), {1, 3, 4, -1, -2});
+    testar(exclusivos({6, -2, -2, -3, 4, 5, 3, 4}), {6, -2, -3, 4, 5, 3});
     testar(exclusivos({3, 2, 1, 1, 2}), {2, 1});
 }
 
@@ -205,7 +207,7 @@ std::vector<int> diferentes(const std::vector<int>& v) {
     std::vector<int> novo_vetor;
 
     for(int i = 0; i < (int) v.size(); i++) {
-        if(find(novo_vetor.begin(), novo_vetor.end(), abs(v[i])) == novo_vetor.end())
+        if(find(novo_vetor.begin(), novo_vetor.end(), abs(v[i])) == novo_vetor.end()) // Se não encontrar no novo_vetor
             novo_vetor.push_back(abs(v[i]));
     }
 
@@ -222,9 +224,9 @@ void teste_diferentes() {
 std::vector<int> abandonados(const std::vector<int>& v) {
     std::vector<int> removidos;
     std::vector<int> novo_vetor = v;
-    int c { 0 };
+    int c { 0 }; // Ele é necessário para não passar do tamanho do novo_vetor
     for(int i = 0; i < (int) v.size(); i++) {
-        if(find(removidos.begin(), removidos.end(), v[i]) == removidos.end()) {
+        if(find(removidos.begin(), removidos.end(), v[i]) == removidos.end()) { // Se não encontrar em removidos
             removidos.push_back(v[i]);
             novo_vetor.erase(novo_vetor.begin() + i - c++);
         }
@@ -241,16 +243,16 @@ void teste_abandonados() {
 }
 
 int main() {
-    teste_clone();
-    teste_pegar_homens();
-    teste_pegar_calmos();
-    teste_pegar_mulheres_calmas();
+    // teste_clone();
+    // teste_pegar_homens();
+    // teste_pegar_calmos();
+    // teste_pegar_mulheres_calmas();
 
-    teste_inverter_com_copia();
-    teste_inverter_inplace();
-    teste_sortear();
-    teste_embaralhar();
-    teste_ordenar();
+    // teste_inverter_com_copia();
+    // teste_inverter_inplace();
+    // teste_sortear();
+    // teste_embaralhar();
+    // teste_ordenar();
     
     teste_exclusivos();
     teste_diferentes();
