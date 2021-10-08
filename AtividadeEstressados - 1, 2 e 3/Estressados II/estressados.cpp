@@ -108,7 +108,6 @@ void teste_inverter_inplace() {
     testar(v3, {3, -52, 12, -8});
 }
 
-//retorna aleatoriamente um elemento do vetor
 int sortear(const std::vector<int>& v) {
     srand(time(NULL));
     int size { (int) v.size() };
@@ -124,7 +123,6 @@ void teste_sortear() {
     std::cout << sortear({31, -34, 42, 44, 89}) << "\n";
 }
 
-//embaralha o vetor original
 void embaralhar(std::vector<int>& v) {
     srand(time(NULL));
     int size { (int) v.size() };
@@ -183,16 +181,80 @@ void teste_ordenar() {
     std::cout << v3 << "\n";
 }
 
+// Funções de Conjuntos
+
+std::vector<int> exclusivos(const std::vector<int>& v) {
+    std::vector<int> novo_vetor;
+
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(find(novo_vetor.begin(), novo_vetor.end(), v[i]) == novo_vetor.end())
+            novo_vetor.push_back(v[i]);
+    }
+
+    return novo_vetor;
+}
+
+void teste_exclusivos() {
+    std::cout << "teste_exclusivos\n";
+    testar(exclusivos({1, 3, 4, 3, -1, -2, -2}), {1, 4, -1});
+    testar(exclusivos({6, -2, -2, -3, 4, 5, 3, 4}), {6, -3, 5, 3});
+    testar(exclusivos({3, 2, 1, 1, 2}), {2, 1});
+}
+
+std::vector<int> diferentes(const std::vector<int>& v) {
+    std::vector<int> novo_vetor;
+
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(find(novo_vetor.begin(), novo_vetor.end(), abs(v[i])) == novo_vetor.end())
+            novo_vetor.push_back(abs(v[i]));
+    }
+
+    return novo_vetor;
+}
+
+void teste_diferentes() {
+    std::cout << "teste_diferentes\n";
+    testar(diferentes({1, 3, 4, 3, -1, -2, -2}), {1, 3, 4, 2});
+    testar(diferentes({6, -2, -2, -3, 4, 5, 3, 4}), {6, 2, 3, 4, 5});
+    testar(diferentes({3, 2, 1, 1, 2}), {2, 1});
+}
+
+std::vector<int> abandonados(const std::vector<int>& v) {
+    std::vector<int> removidos;
+    std::vector<int> novo_vetor = v;
+    int c { 0 };
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(find(removidos.begin(), removidos.end(), v[i]) == removidos.end()) {
+            removidos.push_back(v[i]);
+            novo_vetor.erase(novo_vetor.begin() + i - c++);
+        }
+    }
+
+    return novo_vetor;
+}
+
+void teste_abandonados() {
+    std::cout << "teste_abandonados\n";
+    testar(abandonados({1, 3, 4, 3, -1, -2, -2}), {3, -2});
+    testar(abandonados({6, -2, -2, -3, 4, 5, 3, 4}), {-2, 4});
+    testar(abandonados({3, 2, 1, 1, 2}), {2, 1});
+}
+
 int main() {
-    // teste_clone();
-    // teste_pegar_homens();
-    // teste_pegar_calmos();
-    // teste_pegar_mulheres_calmas();
-    // teste_inverter_com_copia();
-    // teste_inverter_inplace();
-    // teste_sortear();
-    // teste_embaralhar();
-    // teste_ordenar();
+    teste_clone();
+    teste_pegar_homens();
+    teste_pegar_calmos();
+    teste_pegar_mulheres_calmas();
+
+    teste_inverter_com_copia();
+    teste_inverter_inplace();
+    teste_sortear();
+    teste_embaralhar();
+    teste_ordenar();
+    
+    teste_exclusivos();
+    teste_diferentes();
+    teste_abandonados();
 
     return 0;
 }
