@@ -26,15 +26,16 @@ struct Entity {
     bool is_idle {true};
     bool is_mirrored {false};
 
-    std::vector<sf::Texture> idle_frames { loadTexture("./images/Idle (1).png"), loadTexture("./images/Idle (2).png"), loadTexture("./images/Idle (3).png"), loadTexture("./images/Idle (4).png"), loadTexture("./images/Idle (5).png")};
+    std::vector<sf::Texture> idle_frames;
 
-    std::vector<sf::Texture> walk_frames { loadTexture("./images/Walk (1).png"), loadTexture("./images/Walk (2).png"), loadTexture("./images/Walk (3).png"), loadTexture("./images/Walk (4).png"), loadTexture("./images/Walk (5).png"), loadTexture("./images/Walk (6).png"), loadTexture("./images/Walk (7).png"), loadTexture("./images/Walk (8).png"), loadTexture("./images/Walk (9).png"), loadTexture("./images/Walk (10).png") };
+    std::vector<sf::Texture> walk_frames;
 
     int idle_frame_count {0};
     int walk_frame_count {0};
 
-    Entity (int x, int y, int step, sf::Texture& texture):
-        x {x}, y {y}, step {step}, sprite(texture) {
+    Entity (int x, int y, int step, sf::Texture& texture, std::vector<sf::Texture> idle_frames, std::vector<sf::Texture> walk_frames):
+        x {x}, y {y}, step {step}, sprite(texture), idle_frames {idle_frames}, walk_frames{walk_frames} {
+        this->sprite.setPosition(x * step, y * step);    
     }
 
     void draw(sf::RenderWindow& window) {
@@ -126,25 +127,32 @@ int main() {
     sf::Texture background_tex { loadTexture("./images/background.png") };
     sf::Texture ground_tex { loadTexture("./images/ground.png") };
     sf::Texture zombie_tex { loadTexture("./images/Walk (1).png") };
-    // sf::Texture rabbit_tex { loadTexture("./images/rabbit.png") };
+    sf::Texture cat_tex { loadTexture("./images/Cat_Idle.png") };
 
     const int STEP {100};
 
-    Entity zombie(1, 12, STEP, zombie_tex);
-    // Entity rabbit(3, 3, STEP, rabbit_tex);
-    Board board(7, 5, STEP, background_tex);
+    std::vector<sf::Texture> idle_frames { loadTexture("./images/Idle (1).png"), loadTexture("./images/Idle (2).png"), loadTexture("./images/Idle (3).png"), loadTexture("./images/Idle (4).png"), loadTexture("./images/Idle (5).png")};
+
+    std::vector<sf::Texture> walk_frames { loadTexture("./images/Walk (1).png"), loadTexture("./images/Walk (2).png"), loadTexture("./images/Walk (3).png"), loadTexture("./images/Walk (4).png"), loadTexture("./images/Walk (5).png"), loadTexture("./images/Walk (6).png"), loadTexture("./images/Walk (7).png"), loadTexture("./images/Walk (8).png"), loadTexture("./images/Walk (9).png"), loadTexture("./images/Walk (10).png") };
+
+    Entity zombie(1, 6, STEP, zombie_tex, idle_frames, walk_frames);
+    Entity cat(55, 3, STEP, cat_tex, {cat_tex}, {cat_tex});
+    Board board(13, 5, STEP, background_tex);
+
+    cat.is_mirrored = true;
 
     sf::Sprite ground_sp;
     ground_sp.setTexture(ground_tex);
 
+
     sf::RenderWindow window(sf::VideoMode(board.nc * STEP, board.nl * STEP), "O Lobo e o Coelho na Floresta!", sf::Style::Close);
 
-    char ground_matrix[5][7] = {
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-        {'e', 'e', 'e', 'e', 'e', 'g', 'g'},
-        {'g', 'g', 'g', 'e', 'g', 'g', 'g'},
+    char ground_matrix[board.nl][board.nc] = {
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g', 'g'},
+        {'e', 'e', 'e', 'e', 'e', 'g', 'g', 'e', 'e', 'e', 'g', 'g', 'g', 'g'},
+        {'g', 'g', 'g', 'g', 'g', 'g', 'g', 'e', 'g', 'g', 'g', 'g', 'g', 'g'}
     };
 
     while (window.isOpen()) {
@@ -163,10 +171,11 @@ int main() {
 
         board.draw(window);
         zombie.draw(window);
+        cat.draw(window);
         // rabbit.draw(window);
 
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 7; j++) {
+        for(int i = 0; i < board.nl; i++) {
+            for(int j = 0; j < board.nc; j++) {
                 if(ground_matrix[i][j] != 'e') {
                     ground_sp.setPosition(j * STEP, i * STEP);
                     window.draw(ground_sp);
@@ -175,7 +184,6 @@ int main() {
         }
 
         window.display();
-
 
         Sleep(80);
     }
