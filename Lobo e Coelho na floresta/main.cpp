@@ -25,6 +25,7 @@ struct Entity {
 
     bool is_idle {true};
     bool is_mirrored {false};
+    bool is_jumping {false};
 
     std::vector<sf::Texture> idle_frames;
 
@@ -54,12 +55,48 @@ struct Entity {
         this->sprite.setPosition(x * step / 5, y * step / 5);
         if(is_mirrored) {
             setSize(this->sprite, -step, step);
-            this->sprite.setPosition(x * step / 5 + step, y * step / 5);
+            if(!this->is_jumping) {
+                this->sprite.setPosition(x * step / 5 + step / 5, y);
+            } else {
+                if(y > 2 * step) {
+                    this->jump();
+                } else {
+                    this->is_jumping = false;
+                }
+            }
         } else {
             setSize(this->sprite, step, step);
+            if(!this->is_jumping) {
+                this->sprite.setPosition(x * step / 5 - step / 5, y);
+            } else {
+                if(y > 2 * step) {
+                    this->jump();
+                } else {
+                    this->is_jumping = false;
+                }
+            }
         }
 
         window.draw(this->sprite);
+        if(!this->is_jumping) {
+            this->gravity();
+        }
+    }
+
+    void gravity() {
+
+        while(y < 3 * step) {
+            y++;
+            this->sprite.setPosition(x * step / 5, y);
+        }
+    }
+
+    void jump() {
+        int old_y = y;
+        while(y >= old_y - 50) {
+            y--;
+            this->sprite.setPosition(x * step / 5, y);
+        }
     }
 };
 
@@ -105,8 +142,10 @@ void moveEntity(sf::Keyboard::Key key, Entity& entity, std::vector<sf::Keyboard:
             entity.is_mirrored = true;
         }
     } else if(key == move_keys[1]) {
-        entity.y--;
-        entity.is_idle = false;
+        if(!entity.is_jumping) {
+            entity.is_idle = false;
+            entity.is_jumping = true;
+        }
     } else if(key == move_keys[2]) {
         entity.x++;
         entity.is_idle = false;
@@ -114,13 +153,38 @@ void moveEntity(sf::Keyboard::Key key, Entity& entity, std::vector<sf::Keyboard:
         if(entity.is_mirrored) {
             entity.is_mirrored = false;
         }
-    } else if(key == move_keys[3]) {
-        entity.y++;
-        entity.is_idle = false;
     } else {
         entity.is_idle = true;
     }
+
+    // else if(key == move_keys[3]) {
+    //     entity.y++;
+    //     entity.is_idle = false;
+    // } 
 }
+
+void drawBackground(sf::RenderWindow& window, sf::Sprite sprite, const int& STEP, Board& board) {
+    char ground_matrix[board.nl][board.nc] = {
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g'},
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g', 'g'},
+        {'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'}
+    };
+    
+    for(int i = 0; i < board.nl; i++) {
+        for(int j = 0; j < board.nc; j++) {
+            if(ground_matrix[i][j] != 'e') {
+                sprite.setPosition(j * STEP, i * STEP);
+                window.draw(sprite);
+            }
+        }
+    }
+}
+
+// bool entityColision(Entity &entity, Entity& entity) {
+//     if()
+// }
 
 int main() {
 
@@ -135,9 +199,9 @@ int main() {
 
     std::vector<sf::Texture> walk_frames { loadTexture("./images/Walk (1).png"), loadTexture("./images/Walk (2).png"), loadTexture("./images/Walk (3).png"), loadTexture("./images/Walk (4).png"), loadTexture("./images/Walk (5).png"), loadTexture("./images/Walk (6).png"), loadTexture("./images/Walk (7).png"), loadTexture("./images/Walk (8).png"), loadTexture("./images/Walk (9).png"), loadTexture("./images/Walk (10).png") };
 
-    Entity zombie(1, 6, STEP, zombie_tex, idle_frames, walk_frames);
-    Entity cat(55, 3, STEP, cat_tex, {cat_tex}, {cat_tex});
     Board board(13, 5, STEP, background_tex);
+    Entity zombie(1, 1, STEP, zombie_tex, idle_frames, walk_frames);
+    Entity cat(55, 3, STEP, cat_tex, {cat_tex}, {cat_tex});
 
     cat.is_mirrored = true;
 
@@ -146,14 +210,6 @@ int main() {
 
 
     sf::RenderWindow window(sf::VideoMode(board.nc * STEP, board.nl * STEP), "O Lobo e o Coelho na Floresta!", sf::Style::Close);
-
-    char ground_matrix[board.nl][board.nc] = {
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g', 'g'},
-        {'e', 'e', 'e', 'e', 'e', 'g', 'g', 'e', 'e', 'e', 'g', 'g', 'g', 'g'},
-        {'g', 'g', 'g', 'g', 'g', 'g', 'g', 'e', 'g', 'g', 'g', 'g', 'g', 'g'}
-    };
 
     while (window.isOpen()) {
         sf::Event event;
@@ -170,18 +226,11 @@ int main() {
         window.clear();
 
         board.draw(window);
+        drawBackground(window, ground_sp, STEP, board);
         zombie.draw(window);
         cat.draw(window);
-        // rabbit.draw(window);
 
-        for(int i = 0; i < board.nl; i++) {
-            for(int j = 0; j < board.nc; j++) {
-                if(ground_matrix[i][j] != 'e') {
-                    ground_sp.setPosition(j * STEP, i * STEP);
-                    window.draw(ground_sp);
-                }
-            }
-        }
+        
 
         window.display();
 
