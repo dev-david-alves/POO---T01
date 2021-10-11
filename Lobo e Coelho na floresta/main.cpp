@@ -53,10 +53,11 @@ struct Entity {
         }
 
         this->sprite.setPosition(x * step / 5, y * step / 5);
+
         if(is_mirrored) {
             setSize(this->sprite, -step, step);
             if(!this->is_jumping) {
-                this->sprite.setPosition(x * step / 5 + step / 5, y);
+                this->sprite.setPosition(x * step / 5 + step / 2, y);
             } else {
                 if(y > 2 * step) {
                     this->jump();
@@ -67,7 +68,7 @@ struct Entity {
         } else {
             setSize(this->sprite, step, step);
             if(!this->is_jumping) {
-                this->sprite.setPosition(x * step / 5 - step / 5, y);
+                this->sprite.setPosition(x * step / 5, y);
             } else {
                 if(y > 2 * step) {
                     this->jump();
@@ -95,7 +96,11 @@ struct Entity {
         int old_y = y;
         while(y >= old_y - 50) {
             y--;
-            this->sprite.setPosition(x * step / 5, y);
+            if(is_mirrored) {
+                this->sprite.setPosition(x * step / 5 + step / 2, y);
+            } else {
+                this->sprite.setPosition(x * step / 5, y);
+            }
         }
     }
 };
@@ -182,9 +187,17 @@ void drawBackground(sf::RenderWindow& window, sf::Sprite sprite, const int& STEP
     }
 }
 
-// bool entityColision(Entity &entity, Entity& entity) {
-//     if()
-// }
+bool entityColision(Entity &a, Entity& b) {
+    int a_x = a.x % 100;
+    int a_y = a.y % 100;
+
+    int b_x = b.x % 100;
+    int b_y = b.y % 100;
+    
+    if((a_x > b_x - 3 && a_x < b_x + 3) && a_y == b_y) return true;
+
+    return false;
+}
 
 int main() {
 
@@ -230,7 +243,19 @@ int main() {
         zombie.draw(window);
         cat.draw(window);
 
-        
+        if(entityColision(zombie, cat)) {
+            sf::Font font;
+            font.loadFromFile("./arial.ttf");
+
+            sf::Text text;
+            text.setFont(font);
+            text.setString("Personagens Colidiram!");
+            text.setCharacterSize(50);
+            text.setFillColor(sf::Color::Black);
+            text.setStyle(sf::Text::Bold);
+            text.setPosition(450, 200);
+            window.draw(text);
+        }
 
         window.display();
 
