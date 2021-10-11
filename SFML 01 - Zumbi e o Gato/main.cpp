@@ -118,23 +118,10 @@ struct Board {
         this->sprite.setTexture(texture);
         setSize(this->sprite, nc * step, nl * step);
         this->sprite.setPosition(0, 0);
-
-        // this->rect.setSize(sf::Vector2f(step, step));
-        // this->rect.setFillColor(sf::Color::Transparent);
-
-        // this->rect.setOutlineColor(sf::Color::Black);
-        // this->rect.setOutlineThickness(2);
     }
 
     void draw(sf::RenderWindow& window) {
         window.draw(this->sprite);
-
-        // for(int i = 0; i < nc; i++) {
-        //     for(int j = 0; j < nl; j++) {
-        //         this->rect.setPosition(i * step, j * step);
-        //         window.draw(this->rect);
-        //     }
-        // }
     }
 };
 
@@ -161,11 +148,6 @@ void moveEntity(sf::Keyboard::Key key, Entity& entity, std::vector<sf::Keyboard:
     } else {
         entity.is_idle = true;
     }
-
-    // else if(key == move_keys[3]) {
-    //     entity.y++;
-    //     entity.is_idle = false;
-    // } 
 }
 
 void drawBackground(sf::RenderWindow& window, sf::Sprite sprite, const int& STEP, Board& board) {
@@ -173,7 +155,7 @@ void drawBackground(sf::RenderWindow& window, sf::Sprite sprite, const int& STEP
         {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
         {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
         {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g'},
-        {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'g', 'g'},
+        {'e', 'e', 'e', 'e', 'e', 'g', 'g', 'e', 'e', 'e', 'e', 'g', 'g', 'g'},
         {'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'}
     };
     
@@ -204,17 +186,19 @@ int main() {
     sf::Texture background_tex { loadTexture("./images/background.png") };
     sf::Texture ground_tex { loadTexture("./images/ground.png") };
     sf::Texture zombie_tex { loadTexture("./images/Walk (1).png") };
-    sf::Texture cat_tex { loadTexture("./images/Cat_Idle.png") };
+    sf::Texture cat_tex { loadTexture("./images/Cat Walk (1).png") };
 
     const int STEP {100};
 
-    std::vector<sf::Texture> idle_frames { loadTexture("./images/Idle (1).png"), loadTexture("./images/Idle (2).png"), loadTexture("./images/Idle (3).png"), loadTexture("./images/Idle (4).png"), loadTexture("./images/Idle (5).png")};
+    std::vector<sf::Texture> zombie_idle_frames { loadTexture("./images/Idle (1).png"), loadTexture("./images/Idle (2).png"), loadTexture("./images/Idle (3).png"), loadTexture("./images/Idle (4).png"), loadTexture("./images/Idle (5).png")};
 
-    std::vector<sf::Texture> walk_frames { loadTexture("./images/Walk (1).png"), loadTexture("./images/Walk (2).png"), loadTexture("./images/Walk (3).png"), loadTexture("./images/Walk (4).png"), loadTexture("./images/Walk (5).png"), loadTexture("./images/Walk (6).png"), loadTexture("./images/Walk (7).png"), loadTexture("./images/Walk (8).png"), loadTexture("./images/Walk (9).png"), loadTexture("./images/Walk (10).png") };
+    std::vector<sf::Texture> zombie_walk_frames { loadTexture("./images/Walk (1).png"), loadTexture("./images/Walk (2).png"), loadTexture("./images/Walk (3).png"), loadTexture("./images/Walk (4).png"), loadTexture("./images/Walk (5).png"), loadTexture("./images/Walk (6).png"), loadTexture("./images/Walk (7).png"), loadTexture("./images/Walk (8).png"), loadTexture("./images/Walk (9).png"), loadTexture("./images/Walk (10).png") };
+
+    std::vector<sf::Texture> cat_walk_frames { loadTexture("./images/Cat Walk (1).png"), loadTexture("./images/Cat Walk (2).png"), loadTexture("./images/Cat Walk (3).png"), loadTexture("./images/Cat Walk (4).png"), loadTexture("./images/Cat Walk (5).png"), loadTexture("./images/Cat Walk (6).png"), loadTexture("./images/Cat Walk (7).png"), loadTexture("./images/Cat Walk (8).png"), loadTexture("./images/Cat Walk (9).png"), loadTexture("./images/Cat Walk (10).png") };
 
     Board board(13, 5, STEP, background_tex);
-    Entity zombie(1, 1, STEP, zombie_tex, idle_frames, walk_frames);
-    Entity cat(55, 3, STEP, cat_tex, {cat_tex}, {cat_tex});
+    Entity zombie(1, 1, STEP, zombie_tex, zombie_idle_frames, zombie_walk_frames);
+    Entity cat(55, 3, STEP, cat_tex, {cat_tex}, {cat_walk_frames});
 
     cat.is_mirrored = true;
 
@@ -222,7 +206,9 @@ int main() {
     ground_sp.setTexture(ground_tex);
 
 
-    sf::RenderWindow window(sf::VideoMode(board.nc * STEP, board.nl * STEP), "O Lobo e o Coelho na Floresta!", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(board.nc * STEP, board.nl * STEP), "SFML 01 - ZUMBI E O GATO!", sf::Style::Close);
+
+    bool cat_left {true};
 
     while (window.isOpen()) {
         sf::Event event;
@@ -249,15 +235,29 @@ int main() {
 
             sf::Text text;
             text.setFont(font);
-            text.setString("Personagens Colidiram!");
+            text.setString("PERSONAGENS COLIDIRAM!");
             text.setCharacterSize(50);
             text.setFillColor(sf::Color::Black);
             text.setStyle(sf::Text::Bold);
-            text.setPosition(450, 200);
+            text.setPosition(400, 200);
             window.draw(text);
         }
 
         window.display();
+        
+        if(cat.x <= -2 && cat_left) {
+            cat_left = false;
+            cat.x = 0;
+        } else if(cat.x >= 57 && !cat_left) {
+            cat_left = true;
+            cat.x = 55;
+        }
+
+        if(cat_left) {
+            moveEntity(sf::Keyboard::Left, cat, {sf::Keyboard::Left, sf::Keyboard::Up, sf::Keyboard::Right, sf::Keyboard::Down});
+        } else if(!cat_left){
+            moveEntity(sf::Keyboard::Right, cat, {sf::Keyboard::Left, sf::Keyboard::Up, sf::Keyboard::Right, sf::Keyboard::Down});
+        }
 
         Sleep(80);
     }
