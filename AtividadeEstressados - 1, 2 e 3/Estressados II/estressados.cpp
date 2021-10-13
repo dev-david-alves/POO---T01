@@ -243,16 +243,16 @@ void teste_abandonados() {
 }
 
 int main() {
-    // teste_clone();
-    // teste_pegar_homens();
-    // teste_pegar_calmos();
-    // teste_pegar_mulheres_calmas();
+    teste_clone();
+    teste_pegar_homens();
+    teste_pegar_calmos();
+    teste_pegar_mulheres_calmas();
 
-    // teste_inverter_com_copia();
-    // teste_inverter_inplace();
-    // teste_sortear();
-    // teste_embaralhar();
-    // teste_ordenar();
+    teste_inverter_com_copia();
+    teste_inverter_inplace();
+    teste_sortear();
+    teste_embaralhar();
+    teste_ordenar();
     
     teste_exclusivos();
     teste_diferentes();
