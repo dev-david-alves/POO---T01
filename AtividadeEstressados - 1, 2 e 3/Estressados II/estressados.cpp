@@ -7,8 +7,6 @@
 
 #include "../testador.hpp"
 
-// Sempre coloco um dos testes errados para testar --->
-
 // Funções de Filter
 
 std::vector<int> clone(const std::vector<int>& v) {
@@ -19,7 +17,7 @@ std::vector<int> clone(const std::vector<int>& v) {
 void teste_clone() {
     std::cout << "teste_clone\n";
     testar(clone({1, 2, 3}), {1, 2, 3});
-    testar(clone({6, 5, 3}), {1, 4, 3});
+    testar(clone({6, 5, 3}), {6, 5, 3});
     testar(clone({3, 2, 1}), {3, 2, 1});
 }
 
@@ -36,7 +34,7 @@ void teste_pegar_homens() {
     std::cout << "teste_pegar_homens\n";
     testar(pegar_homens({-1, -2, 3}), {2});
     testar(pegar_homens({6, -2, -3, 4, 5}), {0, 3, 4});
-    testar(pegar_homens({3, 2, 1}), {0, 3, 5});
+    testar(pegar_homens({3, 2, 1}), {0, 1, 2});
 }
 
 std::vector<int> pegar_calmos(const std::vector<int>& v) {
@@ -51,7 +49,7 @@ std::vector<int> pegar_calmos(const std::vector<int>& v) {
 void teste_pegar_calmos() {
     std::cout << "teste_pegar_calmos\n";
     testar(pegar_calmos({-1, -22, 30}), {0});
-    testar(pegar_calmos({66, -2, -32, 4, 5}), {1, 2});
+    testar(pegar_calmos({66, -2, -32, 4, 5}), {1, 3, 4});
     testar(pegar_calmos({3, 52, 8, 12}), {0, 2});
 }
 
@@ -68,7 +66,7 @@ void teste_pegar_mulheres_calmas() {
     std::cout << "teste_pegar_mulheres_calmas\n";
     testar(pegar_mulheres_calmas({-1, -22, 30}), {0});
     testar(pegar_mulheres_calmas({66, -2, -32, 4, 5}), {1});
-    testar(pegar_mulheres_calmas({3, -52, -8, 12}), {1, 2});
+    testar(pegar_mulheres_calmas({3, -52, -8, 12}), {2});
 }
 
 // Funções de Acesso
@@ -86,7 +84,7 @@ void teste_inverter_com_copia() {
     std::cout << "teste_inverter_com_copia\n";
     testar(inverter_com_copia({-1, -22, 30}), {30, -22, -1});
     testar(inverter_com_copia({66, -2, -32, 4, 5}), {5, 4, -32, -2, 66});
-    testar(inverter_com_copia({3, -52, -8, 12}), {3, -52, 12, -8});
+    testar(inverter_com_copia({3, -52, -8, 12}), {12, -8, -52, 3});
 }
 
 void inverter_inplace(std::vector<int>& v) {
@@ -107,7 +105,7 @@ void teste_inverter_inplace() {
 
     testar(v1, {30, -22, -1});
     testar(v2, {5, 4, -32, -2, 66});
-    testar(v3, {3, -52, 12, -8});
+    testar(v3, {12, -8, -52, 3});
 }
 
 int sortear(const std::vector<int>& v) {
@@ -200,7 +198,7 @@ void teste_exclusivos() {
     std::cout << "teste_exclusivos\n";
     testar(exclusivos({1, 3, 4, 3, -1, -2, -2}), {1, 3, 4, -1, -2});
     testar(exclusivos({6, -2, -2, -3, 4, 5, 3, 4}), {6, -2, -3, 4, 5, 3});
-    testar(exclusivos({3, 2, 1, 1, 2}), {2, 1});
+    testar(exclusivos({3, 2, 1, 1, 2}), {3, 2, 1});
 }
 
 std::vector<int> diferentes(const std::vector<int>& v) {
@@ -218,7 +216,7 @@ void teste_diferentes() {
     std::cout << "teste_diferentes\n";
     testar(diferentes({1, 3, 4, 3, -1, -2, -2}), {1, 3, 4, 2});
     testar(diferentes({6, -2, -2, -3, 4, 5, 3, 4}), {6, 2, 3, 4, 5});
-    testar(diferentes({3, 2, 1, 1, 2}), {2, 1});
+    testar(diferentes({3, 2, 1, 1, 2}), {3, 2, 1});
 }
 
 std::vector<int> abandonados(const std::vector<int>& v) {
@@ -239,7 +237,7 @@ void teste_abandonados() {
     std::cout << "teste_abandonados\n";
     testar(abandonados({1, 3, 4, 3, -1, -2, -2}), {3, -2});
     testar(abandonados({6, -2, -2, -3, 4, 5, 3, 4}), {-2, 4});
-    testar(abandonados({3, 2, 1, 1, 2}), {2, 1});
+    testar(abandonados({3, 2, 1, 1, 2}), {1, 2});
 }
 
 int main() {
