@@ -7,7 +7,7 @@
 
 #include "../testador.hpp"
 
-// Funções de Filter
+// Funções de Map
 
 std::vector<int> sozinhos(const std::vector<int>& v) {
     std::vector<int> sozinhos;
@@ -71,6 +71,8 @@ void teste_mais_recorrentes() {
     testar(mais_recorrentes({3, 1, 55, 66, 66, 55, 99, 22, 55, 88, 55}), {55});
 }
 
+// Funções de Proximidade
+
 int briga(const std::vector<int>& v) {
     int contador {0};
 
@@ -110,12 +112,105 @@ void teste_apaziguado() {
     testar(apaziguado({3, 1, 99, 66, 66, 55, 99, 2, 55, 88, 1}), {2, 6, 9});
 }
 
+// Funções de Sequências
+
+int quantos_times(const std::vector<int>& v) {
+    int quantos_times_contador {0};
+    int time_m {0};
+    int time_h {0};
+
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(v[i] < 0) {
+            if(time_h > 1) quantos_times_contador++;
+
+            time_m++;
+            time_h = 0;
+        } else if(v[i] > 0) {
+            if(time_m > 1) quantos_times_contador++;
+
+            time_m = 0;
+            time_h++;
+        }
+    }
+
+    return quantos_times_contador;
+}
+
+void teste_quantos_times() {
+    std::cout << "teste_quantos_times\n";
+    testar(quantos_times({1, 3, 4, 5, -1, -5, -5, 3, -3}), {2});
+    testar(quantos_times({6, 5, 3, -3, -5, 7, 88, 88, -1}), {3});
+    testar(quantos_times({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {5});
+}
+
+int maior_time(const std::vector<int>& v) {
+    int maior_time_contador {-99999};
+    int time_m {0};
+    int time_h {0};
+
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(v[i] < 0) {
+            if(time_h > 1 && time_h > maior_time_contador) maior_time_contador = time_h;
+
+            time_m++;
+            time_h = 0;
+        } else if(v[i] > 0) {
+            if(time_m > 1 && time_m > maior_time_contador) maior_time_contador = time_m;
+
+            time_m = 0;
+            time_h++;
+        }
+    }
+
+    return maior_time_contador;
+}
+
+void teste_maior_time() {
+    std::cout << "teste_maior_time\n";
+    testar(maior_time({1, 3, 4, 5, -1, -5, -5, 3, -3}), {4});
+    testar(maior_time({6, 5, 3, -3, -5, 7, 88, 88, -1}), {3});
+    testar(maior_time({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {3});
+}
+
+int sozinhos_sem_time(const std::vector<int>& v) {
+    int sozinhos_sem_time_contador {0};
+
+    for(int i = 1; i < (int) v.size() - 1; i++) {
+        if(v[i] > 0 && v[i - 1] < 0 && v[i + 1] < 0) {
+            sozinhos_sem_time_contador++;
+        }
+
+        if(v[i] < 0 && v[i - 1] > 0 && v[i + 1] > 0) {
+            sozinhos_sem_time_contador++;
+        }
+    }
+
+    if(v[0] > 0 && v[1] < 0) sozinhos_sem_time_contador++;
+    if(v[v.size() - 1] > 0 && v[v.size() - 2] < 0) sozinhos_sem_time_contador++;
+
+    if(v[0] < 0 && v[1] > 0) sozinhos_sem_time_contador++;
+    if(v[v.size() - 1] < 0 && v[v.size() - 2] > 0) sozinhos_sem_time_contador++;
+
+    return sozinhos_sem_time_contador;
+}
+
+void teste_sozinhos_sem_time() {
+    std::cout << "teste_sozinhos_sem_time\n";
+    testar(sozinhos_sem_time({1, 3, 4, 5, -1, -5, -5, 3, -3}), {2});
+    testar(sozinhos_sem_time({6, 5, 3, -3, -5, 7, 88, 88, -1}), {1});
+    testar(sozinhos_sem_time({3, -1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {4});
+}
+
+
 int main() {
     // teste_sozinhos();
     // teste_mais_ocorrencias();
     // teste_mais_recorrentes();
     // teste_briga();
-    teste_apaziguado();
+    // teste_apaziguado();
+    // teste_quantos_times();
+    // teste_maior_time();
+    teste_sozinhos_sem_time();
 
     return 0;
 }
