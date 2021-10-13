@@ -231,7 +231,7 @@ int main() {
 
         if(entityColision(zombie, cat)) {
             sf::Font font;
-            font.loadFromFile("./arial.ttf");
+            font.loadFromFile("./fonts/arial.ttf");
 
             sf::Text text;
             text.setFont(font);
