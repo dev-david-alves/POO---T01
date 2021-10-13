@@ -1,5 +1,4 @@
-.vscode/
-AtividadeEstressados - 1, 2 e 3/Estressados I/estressados.out
-AtividadeEstressados - 1, 2 e 3/Estressados II/estressados.out
-AtividadeEstressados - 1, 2 e 3/Estressados III/estressados.out
-AtividadeGithub/exemplo.out
+*.vscode/
+*.out
+*.o
+*.exe
