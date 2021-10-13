@@ -201,6 +201,64 @@ void teste_sozinhos_sem_time() {
     testar(sozinhos_sem_time({3, -1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {4});
 }
 
+// Funções de Grupos
+
+int casais(const std::vector<int>& v) {
+    int casais_contador {0};
+    std::vector<int> lista_de_espera = v;
+
+    for(int i = 0; i < (int) lista_de_espera.size() - 1; i++) {
+        for(int j = i; j < (int) lista_de_espera.size(); j++) {
+            if(abs(lista_de_espera[i]) == abs(lista_de_espera[j]) && lista_de_espera[i] != lista_de_espera[j] && lista_de_espera[i] != 0) {
+                lista_de_espera[i] = 0;
+                lista_de_espera[j] = 0;
+                casais_contador++;
+                break;
+            }
+        }
+    }
+
+    return casais_contador;
+}
+
+void teste_casais() {
+    std::cout << "teste_casais\n";
+    testar(casais({1, 3, 4, 5, -1, -5, -5, 3, -3}), {3});
+    testar(casais({6, 5, 3, -3, -5, 7, 88, 88, -1}), {2});
+    testar(casais({3, -1, 55, -66, -66, -55, 99, -22, -55, 88, 55, -11}), {2});
+}
+
+int trios(const std::vector<int>& v) {
+    int trios_contador {0};
+    std::vector<int> lista_de_espera = v;
+
+    for(int i = 0; i < (int) lista_de_espera.size() - 2; i++) {
+        for(int j = i + 1; j < (int) lista_de_espera.size() - 1; j++) {
+            if(abs(lista_de_espera[i]) == abs(lista_de_espera[j]) && lista_de_espera[i] != 0) {
+                for(int k = j + 1; k < (int) lista_de_espera.size(); k++) {
+                    if(abs(lista_de_espera[j]) == abs(lista_de_espera[k])) {
+                        lista_de_espera[i] = 0;
+                        lista_de_espera[j] = 0;
+                        lista_de_espera[k] = 0;
+                        trios_contador++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return trios_contador;
+}
+
+void teste_trios() {
+    std::cout << "teste_trios\n";
+    testar(trios({1, 3, 4, 5, -1, -5, -5, 3, -3}), {2});
+    testar(trios({6, -88, 5, 3, -3, -5, 7, 88, 88, -1}), {1});
+    testar(trios({3, -11, 55, -66, -66, -55, 11, -22, -55, 66, 88, 55, -11}), {3});
+}
+
+// Função Principal
 
 int main() {
     // teste_sozinhos();
@@ -210,7 +268,9 @@ int main() {
     // teste_apaziguado();
     // teste_quantos_times();
     // teste_maior_time();
-    teste_sozinhos_sem_time();
+    // teste_sozinhos_sem_time();
+    teste_casais();
+    // teste_trios();
 
     return 0;
 }
