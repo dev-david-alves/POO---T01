@@ -13,10 +13,8 @@ std::vector<int> sozinhos(const std::vector<int>& v) {
     std::vector<int> sozinhos;
 
     for(auto value: v) {
-        if(std::count(v.begin(), v.end(), value) == 1) {
-            if(std::count(v.begin(), v.end(), -value) <= 0) {
+        if(std::count(v.begin(), v.end(), value) == 1 && std::count(v.begin(), v.end(), -value) <= 0) {
                 sozinhos.push_back(abs(value));
-            }
         }
     }
 
@@ -269,8 +267,12 @@ void teste_trios() {
 
 // Funções de Alteração
 
-void remove(std::vector<int>& v, int pos) {
-    v.erase(v.begin() + pos, v.begin() + pos + 1);
+void remove(std::vector<int>& v, int pessoa) {
+    for(int i = 0; i < (int) v.size(); i++) {
+        if(v[i] == pessoa) {
+            v.erase(v.begin() + i, v.begin() + i + 1);
+        }
+    }
 }
 
 void teste_remove() {
@@ -286,9 +288,9 @@ void teste_remove() {
     remove(v2, 5);
     remove(v3, 11);
 
-    testar(v1, {1, 3, 4, -1, -5, -5, 3, -3});
-    testar(v2, {6, -88, 5, 3, -3, 7, 88, 88, -1});
-    testar(v3, {3, -11, 55, -66, -66, -55, 11, -22, -55, 66, 88, -11});
+    testar(v1, {1, 4, 5, -1, -5, -5, -3});
+    testar(v2, {6, -88, 3, -3, -5, 7, 88, 88, -1});
+    testar(v3, {3, -11, 55, -66, -66, -55, -22, -55, 66, 88, 55, -11});
 }
 
 void insert(std::vector<int>& v, int pessoa, int pos) {
@@ -317,13 +319,9 @@ std::vector<int> dance(const std::vector<int>& v) {
     std::vector<int> lista_de_espera = v;
 
     for(int i = 0; i < (int) lista_de_espera.size() - 1; i++) {
-        for(int j = i + 1; j < (int) lista_de_espera.size(); j++) {
-            if(abs(lista_de_espera[i]) == abs(lista_de_espera[j])) {
-                remove(lista_de_espera, j);
-                remove(lista_de_espera, i);
-                i = -1;
-                break;
-            }
+        if(abs(lista_de_espera[i]) == abs(lista_de_espera[i + 1])) {
+            lista_de_espera.erase(lista_de_espera.begin() + i, lista_de_espera.begin() + i + 2);
+            i = -1;
         }
     }
 
@@ -332,9 +330,9 @@ std::vector<int> dance(const std::vector<int>& v) {
 
 void teste_dance() {
     std::cout << "teste_dance\n";
-    testar(dance({1, 3, 4, 5, -1, -5, -5, 3, -3}), {4, -5, -3});
+    testar(dance({-3, 3, 4, 5, -1, -5, -5, 3, -3}), {4, 5, -1});
     testar(dance({6, 5, 3, -3, -5, 7, 88, 88, -1}), {6, 7, -1});
-    testar(dance({3, -1, 55, -66, -66, -55, 99, -22, -55, 88, 55, -11}), {3, -1, 99, -22, 88, -11});
+    testar(dance({3, -1, 55, -66, -66, -55, 99, -22, -55, 88, 55, -11}), {3, -1, 99, -22, -55, 88, 55, -11});
 }
 
 // Função Principal
