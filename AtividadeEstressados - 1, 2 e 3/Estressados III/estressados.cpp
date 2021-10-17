@@ -55,7 +55,7 @@ std::vector<int> mais_recorrentes(const std::vector<int>& v) {
 
     for(auto value: v) {
         if(std::count(v.begin(), v.end(), value) + std::count(v.begin(), v.end(), -value) == mais_ocorrencias_contador) {
-            if(std::find(mais_recorrentes.begin(), mais_recorrentes.end(), value) == mais_recorrentes.end() && std::find(mais_recorrentes.begin(), mais_recorrentes.end(), -value) == mais_recorrentes.end()) {
+            if(std::find(mais_recorrentes.begin(), mais_recorrentes.end(), abs(value)) == mais_recorrentes.end()) {
                 mais_recorrentes.push_back(abs(value));
             }
         }
@@ -115,21 +115,25 @@ void teste_apaziguado() {
 // Funções de Sequências
 
 int quantos_times(const std::vector<int>& v) {
+    std::vector<int> fila = v; // Para que o jeito que eu faço os testes continue dando certo, o compilador só aceita se o parâmentro for constante, mas para essa questão preciso que ele seja variável
+    fila.push_back(0);
     int quantos_times_contador {0};
     int time_m {0};
     int time_h {0};
 
-    for(int i = 0; i < (int) v.size(); i++) {
-        if(v[i] < 0) {
+    for(int i = 0; i < (int) fila.size(); i++) {
+        if(fila[i] < 0) {
             if(time_h > 1) quantos_times_contador++;
 
             time_m++;
             time_h = 0;
-        } else if(v[i] > 0) {
+        } else if(fila[i] > 0) {
             if(time_m > 1) quantos_times_contador++;
 
             time_m = 0;
             time_h++;
+        } else if(fila[i] == 0) {
+            if(time_m > 1 || time_h > 1) quantos_times_contador++;
         }
     }
 
@@ -138,12 +142,14 @@ int quantos_times(const std::vector<int>& v) {
 
 void teste_quantos_times() {
     std::cout << "teste_quantos_times\n";
-    testar(quantos_times({1, 3, 4, 5, -1, -5, -5, 3, -3}), {2});
-    testar(quantos_times({6, 5, 3, -3, -5, 7, 88, 88, -1}), {3});
-    testar(quantos_times({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {5});
+    testar(quantos_times({1, 3, 4, 5, -1, -5, -5, 3, -3, -80}), {3});
+    testar(quantos_times({6, 5, 3, -3, -5, 7, 88, 88, -1, -10}), {4});
+    testar(quantos_times({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55}), {5});
 }
 
 int maior_time(const std::vector<int>& v) {
+    std::vector<int> fila = v; // Para que o jeito que eu faço os testes continue dando certo, o compilador só aceita se o parâmentro for constante, mas para essa questão preciso que ele seja variável
+    fila.push_back(0);
     int maior_time_contador {-99999};
     int time_m {0};
     int time_h {0};
@@ -159,6 +165,9 @@ int maior_time(const std::vector<int>& v) {
 
             time_m = 0;
             time_h++;
+        } else if(v[i] == 0) {
+            if(time_m > 1 && time_m > maior_time_contador) maior_time_contador = time_m;
+            if(time_h > 1 && time_h > maior_time_contador) maior_time_contador = time_h;
         }
     }
 
@@ -167,9 +176,9 @@ int maior_time(const std::vector<int>& v) {
 
 void teste_maior_time() {
     std::cout << "teste_maior_time\n";
-    testar(maior_time({1, 3, 4, 5, -1, -5, -5, 3, -3}), {4});
-    testar(maior_time({6, 5, 3, -3, -5, 7, 88, 88, -1}), {3});
-    testar(maior_time({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11}), {3});
+    testar(maior_time({1, 3, 4, 5, -1, -5, -5, 3, -3, -4}), {4});
+    testar(maior_time({6, 5, 3, -3, -5, 7, 88, 88, -1, -1}), {3});
+    testar(maior_time({3, 1, 55, -66, -66, 55, 99, -22, -55, 88, 55, -11, -12}), {3});
 }
 
 int sozinhos_sem_time(const std::vector<int>& v) {
@@ -208,7 +217,7 @@ int casais(const std::vector<int>& v) {
     std::vector<int> lista_de_espera = v;
 
     for(int i = 0; i < (int) lista_de_espera.size() - 1; i++) {
-        for(int j = i; j < (int) lista_de_espera.size(); j++) {
+        for(int j = i + 1; j < (int) lista_de_espera.size(); j++) {
             if(abs(lista_de_espera[i]) == abs(lista_de_espera[j]) && lista_de_espera[i] != lista_de_espera[j] && lista_de_espera[i] != 0) {
                 lista_de_espera[i] = 0;
                 lista_de_espera[j] = 0;
