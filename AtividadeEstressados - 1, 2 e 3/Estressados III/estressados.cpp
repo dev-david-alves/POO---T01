@@ -155,17 +155,17 @@ int maior_time(const std::vector<int>& v) {
     int time_h {0};
 
     for(int i = 0; i < (int) v.size(); i++) {
-        if(v[i] < 0) {
+        if(fila[i] < 0) {
             if(time_h > 1 && time_h > maior_time_contador) maior_time_contador = time_h;
 
             time_m++;
             time_h = 0;
-        } else if(v[i] > 0) {
+        } else if(fila[i] > 0) {
             if(time_m > 1 && time_m > maior_time_contador) maior_time_contador = time_m;
 
             time_m = 0;
             time_h++;
-        } else if(v[i] == 0) {
+        } else if(fila[i] == 0) {
             if(time_m > 1 && time_m > maior_time_contador) maior_time_contador = time_m;
             if(time_h > 1 && time_h > maior_time_contador) maior_time_contador = time_h;
         }
