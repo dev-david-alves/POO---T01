@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-struct Pincel {
+struct Pencil {
     sf::Font font;
     sf::Text text;
     sf::RenderWindow& window;
 
-    Pincel(sf::RenderWindow& window) : window(window) {
+    Pencil(sf::RenderWindow& window) : window(window) {
         if(!font.loadFromFile("./fonts/arial.ttf"))
             std::cout << "Fail not loaded";
         text.setFont(font);
@@ -19,6 +19,34 @@ struct Pincel {
         text.setFillColor(color);
         window.draw(text);
     }
+};
+
+struct Bubble {
+    int x;
+    int y;
+    char letter;
+    int speed;
+    bool alive {true};
+    
+    static const int radius {10};
+
+    Bubble(int x, int y, char letter, int speed) : x(x), y(y), letter(letter), speed(speed) {
+    }
+
+    void update() {
+        this->y += this->speed;
+    }
+
+    void draw(sf::RenderWindow& window) {
+        sf::CircleShape circle(Bubble::radius);
+        circle.setPosition(this->x, this->y);
+        circle.setFillColor(sf::Color::White);
+        window.draw(circle);
+
+        static Pencil pencil(window);
+        pencil.write(std::string(1, this->letter), x + 0.2 * Bubble::radius, y, Bubble::radius * 1.5, sf::Color::Blue);
+    }
+
 };
 
 struct Game {
@@ -40,8 +68,9 @@ struct Game {
     void draw() {
         window.clear(sf::Color::Black);
 
-        static Pincel pincel(window);
-        pincel.write("Teste", 100, 100, 50, sf::Color::White);
+        static Bubble bubble(200, 100, 'B', 2);
+        bubble.update();
+        bubble.draw(window);
 
         window.display();
     }
