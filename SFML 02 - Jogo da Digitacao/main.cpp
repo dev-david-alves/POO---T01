@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 
 struct Pencil {
     sf::Font font;
@@ -44,15 +45,66 @@ struct Bubble {
         window.draw(circle);
 
         static Pencil pencil(window);
-        pencil.write(std::string(1, this->letter), x + 0.2 * Bubble::radius, y, Bubble::radius * 1.5, sf::Color::Blue);
+        pencil.write(std::string(1, this->letter), x + 0.4 * Bubble::radius, y, Bubble::radius * 1.5, sf::Color::Blue);
+    }
+
+};
+
+struct Board {
+    sf::RenderWindow& window;
+    std::vector<Bubble> bubbles;
+    int hits {0};
+    int misses {0};
+
+    Board(sf::RenderWindow& window) : window(window) {
+        bubbles.push_back(Bubble(100, 100, 'A', 1));
+        bubbles.push_back(Bubble(200, 100, 'B', 2));
+        bubbles.push_back(Bubble(300, 100, 'C', 3));
+    }
+
+    void add_new_bubble() {
+        int x = rand() %  ((int) this->window.getSize().x - 2 * Bubble::radius);
+        int y = 2 * Bubble::radius;
+        int speed = rand() % 5 + 1;
+        char letter = rand() % 26 + 'A';
+        bubbles.push_back(Bubble(x, y, letter, speed));
+    }
+
+    void update() {
+        if(check_new_bubble())
+            add_new_bubble();
+
+        for(Bubble& bubble: bubbles) {
+            bubble.update();
+        }
+    }
+
+    bool check_new_bubble() {
+        static const int new_bubble_timeout {30};
+        static int new_bubble_timer {0};
+
+        new_bubble_timer--;
+        if(new_bubble_timer <= 0) {
+            new_bubble_timer = new_bubble_timeout;
+            return true;
+        }
+
+        return false;
+    }
+
+    void draw() {
+        for(Bubble& bubble: bubbles) {
+            bubble.draw(window);
+        }
     }
 
 };
 
 struct Game {
     sf::RenderWindow window;
+    Board board;
 
-    Game() : window(sf::VideoMode(800, 600), "Bubbles") {
+    Game() : window(sf::VideoMode(800, 600), "Bubbles"), board(window) {
         window.setFramerateLimit(30);
     }
 
@@ -66,12 +118,9 @@ struct Game {
     }
 
     void draw() {
+        board.update();
         window.clear(sf::Color::Black);
-
-        static Bubble bubble(200, 100, 'B', 2);
-        bubble.update();
-        bubble.draw(window);
-
+        board.draw();
         window.display();
     }
 
