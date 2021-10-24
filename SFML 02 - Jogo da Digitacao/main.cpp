@@ -3,6 +3,21 @@
 #include <vector>
 #include <functional>
 
+sf::Texture loadTexture(std::string path) {
+    sf::Texture texture;
+    if(!texture.loadFromFile(path)) {
+        std::cout << "Error loading texture\n";
+        exit(1);
+    }
+
+    return texture;
+}
+
+void setSize(sf::Sprite& sprite, int width, int height) {
+    auto dim = sprite.getLocalBounds();
+    sprite.setScale((float) width / dim.width, (float) height / dim.height);
+}
+
 struct Pencil {
     sf::Font font;
     sf::Text text;
@@ -28,11 +43,13 @@ struct Bubble {
     int y;
     char letter;
     int speed;
+    int radius;
     bool alive {true};
-    
-    static const int radius {10};
 
-    Bubble(int x, int y, char letter, int speed) : x(x), y(y), letter(letter), speed(speed) {
+    sf::Texture bubble_texture { loadTexture("./images/meteor.png") };
+    sf::Sprite sprite;
+
+    Bubble(int x, int y, char letter, int speed, int radius) : x(x), y(y), letter(letter), speed(speed), radius(radius) {
     }
 
     void update() {
@@ -40,13 +57,18 @@ struct Bubble {
     }
 
     void draw(sf::RenderWindow& window) {
-        sf::CircleShape circle(Bubble::radius);
-        circle.setPosition(this->x, this->y);
-        circle.setFillColor(sf::Color::White);
-        window.draw(circle);
+        // sf::CircleShape circle(this->radius);
+        // circle.setPosition(this->x, this->y);
+        // circle.setFillColor(sf::Color::White);
+        // window.draw(circle);
+
+        this->sprite.setTexture(bubble_texture);
+        setSize(this->sprite, this->radius * 4, this->radius * 5);
+        this->sprite.setPosition(this->x, this->y);
+        window.draw(this->sprite);
 
         static Pencil pencil(window);
-        pencil.write(std::string(1, this->letter), x + 0.4 * Bubble::radius, y, Bubble::radius * 1.5, sf::Color::Blue);
+        pencil.write(std::string(1, this->letter), x + this->radius * 1.5, y + this->radius * 3, this->radius * 1.5, sf::Color::White);
     }
 
 };
@@ -62,11 +84,12 @@ struct Board {
     }
 
     void add_new_bubble() {
-        int x = rand() %  ((int) this->window.getSize().x - 2 * Bubble::radius);
-        int y = 2 * Bubble::radius;
-        int speed = rand() % 20 + 1;
+        int radius = rand() % 20 + 10;
+        int x = rand() %  ((int) this->window.getSize().x - 2 * radius);
+        int y = -4 * radius;
+        int speed = (rand() % (10 + this->misses)) + 1 + this->misses;
         char letter = rand() % 26 + 'A';
-        bubbles.push_back(Bubble(x, y, letter, speed));
+        bubbles.push_back(Bubble(x, y, letter, speed, radius));
     }
 
     void update() {
@@ -83,7 +106,7 @@ struct Board {
 
     void mark_outside_bubbles() {
         for(Bubble& bubble: bubbles) {
-            if(bubble.y + 2 * Bubble::radius > (int) this->window.getSize().y) {
+            if(bubble.y + 2 * bubble.radius > (int) this->window.getSize().y) {
                 if(bubble.alive) {
                     bubble.alive = false;
                     this->misses++;
@@ -142,6 +165,8 @@ struct Game {
     Board board;
     std::function<void()> on_update;
 
+    const int maximum_misses {10};
+
     Game() : window(sf::VideoMode(800, 600), "Bubbles"), board(window) {
         this->on_update = [&]() {
             this->gameplay();
@@ -158,6 +183,15 @@ struct Game {
                 char code = static_cast<char>(event.text.unicode);
                 code = toupper(code);
                 board.mark_by_hit(code);
+            } else if(event.type == sf::Event::KeyPressed) {
+                if(event.key.code == sf::Keyboard::Enter && board.misses >= maximum_misses) {
+                    board.misses = 0;
+                    board.hits = 0;
+                    board.bubbles = {};
+                    this->on_update = [&]() {
+                        this->gameplay();
+                    };
+                }
             }
         }
     }
@@ -168,7 +202,7 @@ struct Game {
         board.draw();
         window.display();
 
-        if(board.misses > 3) {
+        if(board.misses >= maximum_misses) {
             this->on_update = [&]() {
                 this->gameover();
             };
@@ -177,8 +211,9 @@ struct Game {
 
     void gameover() {
         static Pencil pencil(window);
-        window.clear(sf::Color::Red);
+        window.clear(sf::Color::Black);
         pencil.write("Game Over", 250, 250, 50, sf::Color::White);
+        pencil.write("Press Enter to Play Again", 240, 310, 25, sf::Color::Cyan);
         window.display();
     }
 
