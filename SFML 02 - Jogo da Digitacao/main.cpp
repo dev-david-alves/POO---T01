@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <functional>
 
 struct Pencil {
     sf::Font font;
@@ -63,7 +64,7 @@ struct Board {
     void add_new_bubble() {
         int x = rand() %  ((int) this->window.getSize().x - 2 * Bubble::radius);
         int y = 2 * Bubble::radius;
-        int speed = rand() % 5 + 1;
+        int speed = rand() % 20 + 1;
         char letter = rand() % 26 + 'A';
         bubbles.push_back(Bubble(x, y, letter, speed));
     }
@@ -139,8 +140,12 @@ struct Board {
 struct Game {
     sf::RenderWindow window;
     Board board;
+    std::function<void()> on_update;
 
     Game() : window(sf::VideoMode(800, 600), "Bubbles"), board(window) {
+        this->on_update = [&]() {
+            this->gameplay();
+        };
         window.setFramerateLimit(30);
     }
 
@@ -157,17 +162,30 @@ struct Game {
         }
     }
 
-    void draw() {
+    void gameplay() {
         board.update();
         window.clear(sf::Color::Black);
         board.draw();
+        window.display();
+
+        if(board.misses > 3) {
+            this->on_update = [&]() {
+                this->gameover();
+            };
+        }
+    }
+
+    void gameover() {
+        static Pencil pencil(window);
+        window.clear(sf::Color::Red);
+        pencil.write("Game Over", 250, 250, 50, sf::Color::White);
         window.display();
     }
 
     void main_loop() {
         while(window.isOpen()) {
             process_events();
-            draw();
+            on_update();
         }
     }
 };
@@ -179,7 +197,7 @@ int main() {
     return 0;
 }
 
-// Rodar SFML
+// Run SFML
 
 // g++ -IC:\SFML-2.5.1\include -c main.cpp -o main.o
 // g++ -LC:\SFML-2.5.1\lib .\main.o -o app.exe -lmingw32 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-main -mwindows
