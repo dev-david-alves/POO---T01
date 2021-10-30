@@ -34,47 +34,84 @@ struct Grafite {
 
 struct Lapiseira {
     float calibre;
-    Grafite* grafite;
 
-    Lapiseira(float calibre, Grafite* grafite) : calibre(calibre), grafite(grafite) {
+    static const int max_size = 10;
+    int num_pontas = 0;
+    Grafite* grafite[max_size];
+    
+    Lapiseira(float calibre) {
+        this->calibre = calibre;
+        for(int i = 0; i < max_size; i++) {
+            this->grafite[i] = nullptr;
+        }
     }
 
     bool inserirGrafite(Grafite *grafite) {
-        if(this->grafite != nullptr) {
-            std::cout << "Ja tem grafite.\n";
+        if(num_pontas >= max_size) {
+            std::cout << "Ja tem grafites demais.\n";
             return false;
         }
 
-        if(grafite->calibre != this->calibre) {
+        if(this->calibre != grafite->calibre) {
             std::cout << "Nao e posivel inserir, pois o calibre e imcompativel.\n";
             return false;
         }
 
-        this->grafite = grafite;
+        empurrarGrafite();
+        this->grafite[0] = grafite;
+        this->num_pontas++;
+
         std::cout << "Grafite inserido.\n";
         return true;
     }
 
-    Grafite* removerGrafite() {
-        if(this->grafite == nullptr) {
-            std::cout << "Nao e posivel remover, pois ja esta sem grafite.\n";
-            return nullptr;
+    void empurrarGrafite() {
+        for(int i = max_size - 1; i > 0; i--) {
+            std::swap(this->grafite[i], this->grafite[i - 1]);
+        }
+    }
+
+    bool removerGrafite() {
+        if(this->grafite[0] == nullptr || this->num_pontas <= 0) {
+            std::cout << "Nao e posivel remover mais, pois ja esta sem grafite.\n";
+            return false;
         }
 
+        this->grafite[0] = nullptr;
+        puxarGrafite();
+        this->num_pontas--;
+
         std::cout << "Grafite removido.\n";
-        return std::exchange(this->grafite, nullptr);
+        return true;
+    }
+
+    void puxarGrafite() {
+        for(int i = 0; i < this->max_size - 1; i++) {
+            std::swap(this->grafite[i], this->grafite[i + 1]);
+        }
     }
 
     bool escrever(int folhas) {
         int quantidade_inicial = folhas;
-        if(this->grafite == nullptr) {
+        if(this->grafite[0] == nullptr || this->num_pontas <= 0) {
             std::cout << "Nao e possivel escrever, pois nao tem grafite.\n";
             return false;
         }
 
-        while(this->grafite->tamanho > 0 && folhas > 0) {
-            this->grafite->tamanho -= this->grafite->desgastePorFolha();
+        while(folhas > 0) {
+            if(this->grafite[0]->tamanho <= 10) {
+                removerGrafite();
+            }
+            
+            if(this->grafite[0] == nullptr) break;
+
+            this->grafite[0]->tamanho -= this->grafite[0]->desgastePorFolha();
+
             folhas--;
+        }
+
+        if(this->grafite[0] != nullptr && this->grafite[0]->tamanho <= 10) {
+            removerGrafite();
         }
 
         if(folhas > 0) {
@@ -85,16 +122,26 @@ struct Lapiseira {
         std::cout << "Folhas escritas com sucesso.\n";
         return true;
     }
+
+    void print() {
+        for(int i = 0; i < max_size; i++) {
+            std::cout << this->grafite[i] << " ";
+        }
+        std::cout << "\n";
+    }
 };
 
-
-
-
 int main() {
-    Lapiseira lapiseira(2.0, nullptr);
+    Lapiseira lapiseira(2.0);
     Grafite grafite1(1.0, "HB", 10);
-    Grafite grafite2(2.0, "2B", 10);
-    Grafite grafite3(2.0, "6B", 70);
+    Grafite grafite2(2.0, "6B", 70);
+
+    Grafite grafite3(2.0, "2B", 16);
+    Grafite grafite4(2.0, "2B", 16);
+    Grafite grafite5(2.0, "2B", 16);
+    Grafite grafite6(2.0, "2B", 16);
+    Grafite grafite7(2.0, "2B", 16);
+    Grafite grafite8(2.0, "2B", 16);
 
     lapiseira.inserirGrafite(&grafite1);
     lapiseira.escrever(13);
@@ -103,6 +150,12 @@ int main() {
     std::cout << "\n";
 
     lapiseira.inserirGrafite(&grafite2);
+    lapiseira.inserirGrafite(&grafite4);
+    lapiseira.inserirGrafite(&grafite5);
+    lapiseira.inserirGrafite(&grafite6);
+    lapiseira.inserirGrafite(&grafite7);
+    lapiseira.inserirGrafite(&grafite8);
+    
     lapiseira.escrever(15);
     lapiseira.removerGrafite();
 
@@ -111,6 +164,8 @@ int main() {
     lapiseira.inserirGrafite(&grafite3);
     lapiseira.escrever(8);
     lapiseira.removerGrafite();
+
+    std::cout << grafite1 << "\n";
 
     return 0;
 }
