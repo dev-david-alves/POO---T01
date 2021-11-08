@@ -18,7 +18,9 @@ struct Pessoa {
 
 struct Moto {
 
-    Pessoa* pessoa {nullptr};
+    static const int capacidade {3};
+    int qtdPessoas {0};
+    Pessoa* pessoa[capacidade] {nullptr};
     int potencia {1};
     int tempo {0};
 
@@ -30,23 +32,38 @@ struct Moto {
     }
 
     bool subir(Pessoa *pessoa) {
-        if(this->pessoa == nullptr) {
-            this->pessoa = pessoa;
-
+        if(this->qtdPessoas < capacidade) {
+            this->pessoa[qtdPessoas] = pessoa;
+            this->qtdPessoas++;
             std::cout << pessoa->nome << " subiu na moto!\n";
             return true;
         }
 
-        std::cout << "Nao foi possivel subir na moto, pois ja tem uma pessoa nela!\n";
+        std::cout << "Nao foi possivel subir na moto, pois ja atingiu a capacidade maxima!\n";
 
         return false;
     }
 
-    Pessoa* descer() {
-        if(this->pessoa != nullptr) {
-            std::cout << this->pessoa->nome << " desceu da moto!\n";
-            this->tempo = 0;
-            return std::exchange(this->pessoa, nullptr);
+    Pessoa* descer(int pos = 0) {
+        if(this->qtdPessoas > 0) {
+            Pessoa* pessoa = std::exchange(this->pessoa[pos], nullptr);
+            this->qtdPessoas--;
+            std::cout << pessoa->nome << " desceu da moto!\n";
+
+            Pessoa* temp[capacidade] {nullptr};
+            int cont {0};
+            for(int i = 0; i < this->capacidade; i++) {
+                if(this->pessoa[i] != nullptr) {
+                    temp[cont] = this->pessoa[i];
+                    cont++;
+                }
+            }
+
+            for(int i = 0; i < this->capacidade; i++) {
+                this->pessoa[i] = temp[i];
+            }
+            
+            return pessoa;
         }
 
         std::cout << "Nao foi possivel descer da moto, pois ja nao tinha ninguem nela!\n";
@@ -55,23 +72,23 @@ struct Moto {
     }
 
     void dirigir(int tempo) {
-        if(this->pessoa != nullptr) {
-            if(this->pessoa->idade <= 10 && this->tempo > 0) {
+        if(this->pessoa[0] != nullptr) {
+            if(this->pessoa[0]->idade <= 10 && this->tempo > 0) {
                 if(tempo > this->tempo) {
-                    std::cout << this->pessoa->nome << " pode dirigir a moto\n";
+                    std::cout << this->pessoa[0]->nome << " pode dirigir a moto\n";
                     std::cout << "Dirigindo.........\n";
-                    std::cout << "O tempo acabou, " << this->pessoa->nome << " dirigiu por " << this->tempo << " minutos!\n";
+                    std::cout << "O tempo acabou, " << this->pessoa[0]->nome << " dirigiu por " << this->tempo << " minutos!\n";
                     this->tempo = 0;
                     this->descer();
                 } else {
-                    std::cout << this->pessoa->nome << " ira dirigir a moto por " << tempo << " minutos!\n";
+                    std::cout << this->pessoa[0]->nome << " ira dirigir a moto por " << tempo << " minutos!\n";
                     this->tempo -= tempo;
                 }
             } else {
-                if(this->pessoa->idade > 10) {
-                    std::cout << this->pessoa->nome << " nao pode dirigir a moto por ser muito grande!\n";
+                if(this->pessoa[0]->idade > 10) {
+                    std::cout << this->pessoa[0]->nome << " nao pode dirigir a moto por ser muito grande!\n";
                 } else if(this->tempo <= 0) {
-                    std::cout << this->pessoa->nome << " nao pode dirigir a moto, por falta de tempo!\n";
+                    std::cout << this->pessoa[0]->nome << " nao pode dirigir a moto, por falta de tempo!\n";
                 }
 
                 this->descer();
@@ -82,7 +99,7 @@ struct Moto {
     }
 
     void buzinar() {
-        if(this->pessoa != nullptr) {
+        if(this->qtdPessoas > 0) {
             std::cout << "P" << std::string(this->potencia, 'e') << "m\n";
         } else {
             std::cout << "Nao foi possivel buzinar, pois nao tinha ninguem na moto!\n";
@@ -90,14 +107,20 @@ struct Moto {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Moto& moto) {
-        os << "Moto -----------\n";
+        os << "\nMoto -----------\n";
         os << "Potencia: " << moto.potencia << ", ";
         os << "Tempo: " << moto.tempo << ", ";
-        if(moto.pessoa != nullptr) {
-            os << "Pessoa: " << "[" << moto.pessoa->nome << ": " << moto.pessoa->idade << "]\n";
-        } else {
-            os << "Pessoa: null\n";
+
+        os << "Pessoas: [  ";
+        for(auto pessoa: moto.pessoa) {
+            if(pessoa != nullptr) {
+                os << pessoa->nome << ": " << pessoa->idade << "  ";
+            } else {
+                os << "null  ";
+            }
         }
+
+        os << "]\n";
 
         return os;
     }
@@ -116,11 +139,23 @@ int main() {
     moto.buzinar();
 
     Pessoa marisa("Marisa", 2);
+    Pessoa josefina("Josefina", 10);
+    Pessoa breno("Breno", 9);
+    Pessoa david("David", 8);
 
     moto.subir(&marisa);
     std::cout << moto << "\n";
 
-    moto.comprarTempo(3);
+    moto.subir(&josefina);
+    std::cout << moto << "\n";
+
+    moto.subir(&breno);
+    std::cout << moto << "\n";
+
+    moto.subir(&david);
+    std::cout << moto << "\n";
+
+    moto.comprarTempo(30);
     std::cout << moto << "\n";
 
     moto.dirigir(5);
@@ -141,6 +176,24 @@ int main() {
 
     moto.buzinar();
     moto.dirigir(15);
+    std::cout << moto << "\n";
+
+    moto.descer(1);
+    std::cout << moto << "\n";
+
+    moto.dirigir(15);
+    std::cout << moto << "\n";
+
+    moto.comprarTempo(5);
+    std::cout << moto << "\n";
+
+    moto.dirigir(10);
+    std::cout << moto << "\n";
+
+    moto.comprarTempo(5);
+    std::cout << moto << "\n";
+
+    moto.dirigir(10);
     std::cout << moto << "\n";
 
     return 0;
