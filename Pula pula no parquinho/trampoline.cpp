@@ -1,76 +1,52 @@
-// #include "trampoline.hpp"
-// #include <iterator>
+#pragma once
 
-// //remove and return the Kid with this name or null
-// Kid* Trampoline::remove_kid(std::string name, std::list<Kid> list) {
+#include "trampoline.hpp"
 
-//     for(int i = 0; i < (int) list.size(); i++) {
-//         // std::advance(it, i);
-//         // if(it.getName() == name) {
-//         //     auto kid = it;
-//         //     list.erase(list.begin() + i);
-//         //     return it;
-//         // }
-//         std::next(list.begin(), i);
-//     }
+// put on the waiting list
+void Trampoline::arrive(Kid* kid) {
+    if(kid != nullptr) {
+        waiting.push_back(*kid);
+        std::cout << kid->getName() << " put on waiting list.\n";
+    } else {
+        std::cout << kid->getName() << " cannot be put on the waiting list.\n";
+    }
+}
 
-//     std::cout << name << " is not playing" << "\n";
+// remove from waiting list and place on playing list
+void Trampoline::in() {
+    if(waiting.size() > 0) {
+        std::cout << waiting.front().getName() << " put on playing list.\n";
+        playing.push_back(waiting.front());
+        waiting.pop_front();
+    } else {
+        std::cout << "There is no one on waiting list.\n";
+    }
+}
 
-//     return nullptr;
-// }
+// remove from playing list and place on wainting list
+void Trampoline::out() {
+    if(playing.size() > 0) {
+        std::cout << playing.front().getName() << " put on waiting list.\n";
+        waiting.push_back(playing.front());
+        playing.pop_front();
+    } else {
+        std::cout << "There is no one on playing list.\n";
+    }
+}
 
-// //put on the waiting list
-// void Trampoline::arrive(Kid* kid) {
-//     this->waiting.push_back(kid);
-//     std::cout << "Kid " << this->waiting.back().getName() << " is waiting" << "\n";
-// }
+// remove from the playground
+Kid* Trampoline::remove(std::string name) {
+    Kid* kid = remove_kid(name, playing);
 
-// // remove from waiting list and place on playing list
-// void Trampoline::in() {
-//     if(this->waiting.size() > 0) {
-//         this->playing.push_back(this->waiting.front());
-//         this->waiting.pop_front();
-//         std::cout << "Kid " << this->playing.back().getName() << " is playing" << "\n";
-//     } else {
-//         std::cout << "There is no one waiting to play" << "\n";
-//     }
-// }
+    if(kid == nullptr) {
+        kid = remove_kid(name, waiting);
+    }
 
-// //remove from playing to wainting
-// void Trampoline::out() {
-//     if(this->playing.size() > 0) {
-//         this->waiting.push_back(this->playing.front());
-//         this->playing.pop_front();
-//         std::cout << "Kid " << this->waiting.back().getName() << " is waiting" << "\n";
-//     } else {
-//         std::cout << "There is no one playing" << "\n";
-//     }
-// }
+    if(kid != nullptr) {
+        std::cout << kid->getName() << " removed from the playground.\n";
+        return kid;
+    }
 
-// // remove from the playground
-// Kid* Trampoline::remove(std::string name) {
-//     // if(this->playing.size() > 0) {
-//     //     for(int i = 0; i < (int) this->playing.size(); i++) {
-//     //         if(this->playing.at(i).getName() == name) {
-//     //             auto kid = this->playing.at(i);
-//     //             this->playing.erase(this->playing.begin() + i);
-//     //             return kid;
-//     //         }
-//     //     }
-//     // }
-
-//     // if(this->wainting.size() > 0) {
-//     //     for(int i = 0; i < (int) this->wainting.size(); i++) {
-//     //         if(this->wainting.at(i).getName() == name) {
-//     //             auto kid = this->wainting.at(i);
-//     //             this->wainting.erase(this->wainting.begin() + i);
-//     //             return kid;
-//     //         }
-//     //     }
-//     // }
-
-//     std::cout << name << " is not playing" << "\n";
-    
-
-//     return nullptr;
-// }
+    std::cout << "Kid not found on waiting list or playing list.\n";
+    return nullptr;
+}

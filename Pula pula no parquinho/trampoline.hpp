@@ -1,53 +1,44 @@
+#pragma once
+
 #include <iostream>
 #include <list>
-#include <memory>
 
 class Trampoline {
     private:
         std::list<Kid> waiting;
         std::list<Kid> playing;
 
+        // remove and return the Kid with this name or nullptr if not found
+        static Kid* remove_kid(std::string name, std::list<Kid>& list) {
+            for(auto it = list.begin(); it != list.end(); it++) {
+                if(it->getName() == name) {
+                    auto kid = &*it;
+                    list.erase(it);
+                    return kid;
+                }
+            }
+
+            return nullptr;
+        }
+
     public:
         Trampoline() {}
 
-        Kid* remove_kid(std::string name, std::list<Kid> list) {
-
-            for(auto it = list.begin(); it != list.end(); it++) {
-                if(it->getName() == name) {
-                    list.erase(it);
-                    return &*it;
-                }                
-            }
-
-            return nullptr;
-        }
-
-        //put on the waiting list
-        void arrive(Kid* kid) {
-            waiting.push_back(*kid);
-
-            // std::cout << "Arriving " << kid->getName() << "\n";
-        }
+        // put on the waiting list
+        void arrive(Kid* kid);
 
         // remove from waiting list and place on playing list
-        void in() {
-            if(waiting.size() > 0) {
-                playing.push_back(waiting.front());
-                waiting.pop_front();
-            }
-        }
+        void in();
 
-        void out() {
+        // remove from playing list and place on wainting list
+        void out();
 
-        }
+        // remove from the playground
+        Kid* remove(std::string name);
 
-        Kid* remove(std::string name) {
-            std::cout << "Removing " << name << "\n";
-            return nullptr;
-        }
-
+        // Print the list of kids
         friend std::ostream& operator<<(std::ostream& os, const Trampoline& trampoline) {
-            os << "Waiting: ";
+            os << "\nWaiting: ";
             for(auto& kid : trampoline.waiting) {
                 os << "[" << kid << "] ";
             }

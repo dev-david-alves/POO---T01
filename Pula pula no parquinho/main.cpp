@@ -1,5 +1,5 @@
 #include "kid.cpp"
-#include "trampoline.hpp"
+#include "trampoline.cpp"
 
 int main() {
     Kid jose("jose", 10);
@@ -18,6 +18,24 @@ int main() {
 
     trampoline.in();
     trampoline.in();
+    trampoline.in();
+    trampoline.in();
+    trampoline.in();
+
+    std::cout << trampoline << "\n";
+
+    trampoline.out();
+    trampoline.out();
+
+    std::cout << trampoline << "\n";
+
+    trampoline.remove("david");
+    trampoline.remove("maria");
+
+    std::cout << trampoline << "\n";
+
+    trampoline.remove("francisco");
+    trampoline.remove("jose");
 
     std::cout << trampoline << "\n";
 }

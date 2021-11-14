@@ -1,3 +1,5 @@
+#pragma once
+
 #include "kid.hpp"
 
 Kid::Kid(std::string name, int age) {
