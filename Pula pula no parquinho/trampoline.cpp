@@ -3,19 +3,19 @@
 #include "trampoline.hpp"
 
 // put on the waiting list
-void Trampoline::arrive(Kid* kid) {
+void Trampoline::arrive(std::shared_ptr<Kid> kid) {
     if(kid != nullptr) {
-        waiting.push_back(*kid);
+        waiting.push_back(kid);
         std::cout << kid->getName() << " put on waiting list.\n";
     } else {
-        std::cout << kid->getName() << " cannot be put on the waiting list.\n";
+        std::cout << "Nullptr cannot be put on the waiting list.\n";
     }
 }
 
 // remove from waiting list and place on playing list
 void Trampoline::in() {
     if(waiting.size() > 0) {
-        std::cout << waiting.front().getName() << " put on playing list.\n";
+        std::cout << waiting.front()->getName() << " put on playing list.\n";
         playing.push_back(waiting.front());
         waiting.pop_front();
     } else {
@@ -26,7 +26,7 @@ void Trampoline::in() {
 // remove from playing list and place on wainting list
 void Trampoline::out() {
     if(playing.size() > 0) {
-        std::cout << playing.front().getName() << " put on waiting list.\n";
+        std::cout << playing.front()->getName() << " put on waiting list.\n";
         waiting.push_back(playing.front());
         playing.pop_front();
     } else {
@@ -35,8 +35,8 @@ void Trampoline::out() {
 }
 
 // remove from the playground
-Kid* Trampoline::remove(std::string name) {
-    Kid* kid = remove_kid(name, playing);
+std::shared_ptr<Kid> Trampoline::remove(std::string name) {
+    std::shared_ptr<Kid> kid = remove_kid(name, playing);
 
     if(kid == nullptr) {
         kid = remove_kid(name, waiting);

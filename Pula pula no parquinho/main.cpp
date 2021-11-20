@@ -2,17 +2,17 @@
 #include "trampoline.cpp"
 
 int main() {
-    Kid jose("jose", 10);
-    Kid maria("maria", 11);
-    Kid elias("elias", 12);
-    Kid david("david", 13);
+    std::shared_ptr<Kid> jose(new Kid("jose", 10));
+    std::shared_ptr<Kid> maria(new Kid("maria", 11));
+    std::shared_ptr<Kid> elias(new Kid("elias", 12));
+    std::shared_ptr<Kid> david(new Kid("david", 13));
 
     Trampoline trampoline;
 
-    trampoline.arrive(&jose);
-    trampoline.arrive(&maria);
-    trampoline.arrive(&elias);
-    trampoline.arrive(&david);
+    trampoline.arrive(jose);
+    trampoline.arrive(maria);
+    trampoline.arrive(elias);
+    trampoline.arrive(david);
 
     std::cout << trampoline << "\n";
 
