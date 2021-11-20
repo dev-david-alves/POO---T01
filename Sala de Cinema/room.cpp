@@ -2,59 +2,60 @@
 
 #include "room.hpp"
 
-std::vector<Client> Room::getSeats() {
+int Room::findClient(std::string id) {
+    int index = 0; 
+    for (auto value: this->getSeats()) {
+        if (value != nullptr && value->getId() == id) {
+            return index;
+        }
+
+        index++;
+    }
+
+    return -1;
+}
+
+std::vector<std::shared_ptr<Client>> Room::getSeats() {
     return seats;
 }
 
+void Room::setSeat(int index, std::shared_ptr<Client> client) {
+    this->seats[index] = client;
+}
+
 bool Room::reserve(std::string id, std::string fone, int index){
-    if(index < 0 || index >= (int) seats.size()) {
-        std::cout << index << " is an invalid seat.\n";
+    if(index < 0 || index >= (int) this->getSeats().size()) {
+        std::cout << "Cannot register on seat " << index << " cause this is an invalid seat.\n";
         return false;
     }
 
-    for(int i = 0; i < (int) seats.size(); i++) {
-        if(seats[i].getId() == id) {
-            std::cout << "Cannot register " << id << " cause it's already registered.\n";
-            return false;
-        }
+    if(findClient(id) != -1) {
+        std::cout << "Cannot register " << id << " cause it's already registered.\n";
+        return false;
     }
 
-    if(seats[index].getId() != "-") {
-        std::cout << "Cannot register cause this seat is already taken.\n";
+    if(this->getSeats()[index] != nullptr) {
+        std::cout << "Cannot register on seat " << index << " cause this seat is already taken.\n";
         return false;
     }
 
     std::cout << "Reserving seat " << index << " for " << id << ".\n";
 
-    Client client(id, fone);
-    seats[index] = client;
+    std::shared_ptr<Client> client(new Client(id, fone));
 
+    this->setSeat(index, client);
     this->toString();
 
     return true;
 }
 
 void Room::cancel(std::string id) {
-    bool exists = false;
+    int clientIndex = findClient(id);
 
-    for(int i = 0; i < (int) seats.size(); i++) {
-        if(seats[i].getId() == id) {
-            exists = true;
-            break;
-        }
-    }
-
-    if(!exists) {
+    if(clientIndex == -1) {
         std::cout << "Cannot cancel " << id << " cause it's not registered.\n";
     } else {
-        for(int i = 0; i < (int) seats.size(); i++) {
-            if(seats[i].getId() == id) {
-                seats[i].setId("-");
-                seats[i].setFone("");
-                break;
-            }
-        }
-
+        this->setSeat(clientIndex, nullptr);
         std::cout << "Reservation Canceled for " << id << ".\n";
     }
 
@@ -62,12 +63,11 @@ void Room::cancel(std::string id) {
 }
 
 void Room::toString() {
-    std::cout << "\n";
-    for(auto c: this->getSeats()) {
-        if(c.getId() == "-") {
+    for(auto seat: this->getSeats()) {
+        if(seat == nullptr) {
             std::cout << " - ";
         } else {
-            std::cout << "[" << c.getId() << " " << c.getFone() << "] ";
+            std::cout << "[" << seat->getId() << " " << seat->getFone() << "] ";
         }
     }
 

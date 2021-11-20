@@ -4,11 +4,11 @@
 
 class Client {
     private:
-        std:: string id;
-        std:: string fone;
+        std::string id;
+        std::string fone;
 
     public:
-        Client(std::string id = "-", std::string fone = "") : id(id), fone(fone) {}
+        Client(std::string id = "", std::string fone = "") : id(id), fone(fone) {}
 
         std::string getId();
 
