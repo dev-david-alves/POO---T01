@@ -3,8 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../Contato/contact.cpp"
-#include "../Contato/phone.cpp"
+#include "../Contato/contact.hpp"
 
 class Agenda {
     private:

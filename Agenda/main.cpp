@@ -1,6 +1,4 @@
-#include "agenda.cpp"
-#include "../Contato/contact.cpp"
-#include "../Contato/phone.cpp"
+#include "agenda.hpp"
 
 int main() {
     Agenda agenda;

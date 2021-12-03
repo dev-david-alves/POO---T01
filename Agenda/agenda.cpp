@@ -1,10 +1,6 @@
-#pragma once
-
 #include <algorithm>
 
 #include "agenda.hpp"
-#include "../Contato/contact.cpp"
-#include "../Contato/phone.cpp"
 
 // returns the position of the contact with that name in the vector or -1 if it does not exist.
 int Agenda::findPosByName(std::string name) {
