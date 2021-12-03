@@ -1,5 +1,3 @@
-#pragma once
-
 #include "phone.hpp"
 
 std::string Phone::getId() {

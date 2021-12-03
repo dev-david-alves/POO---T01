@@ -1,5 +1,7 @@
 #pragma once
 
+#include "phone.hpp"
+
 #include <iostream>
 #include <vector>
 
@@ -7,8 +9,6 @@ class Contact {
     private:
         std::string name;
         std::vector<Phone> phones;
-
-    protected:
         std::string prefix = "-"; //utilizado no toString
         
     public:
@@ -27,6 +27,8 @@ class Contact {
         std::vector<Phone> getPhones();
 
         void setPhone(Phone phone);
+
+        std::string getPrefix();
 
         std::string toString();
 };

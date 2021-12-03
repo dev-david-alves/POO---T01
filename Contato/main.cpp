@@ -1,5 +1,5 @@
-#include "phone.cpp"
-#include "contact.cpp"
+#include "phone.hpp"
+#include "contact.hpp"
 
 int main() {
     Contact contact("David");

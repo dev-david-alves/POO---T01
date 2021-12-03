@@ -1,5 +1,3 @@
-#pragma once
-
 #include "contact.hpp"
 
 void Contact::addPhone(Phone phone) {
@@ -38,6 +36,10 @@ void Contact::setPhone(Phone phone) {
     this->phones.push_back(phone);
 }
 
+std::string Contact::getPrefix() {
+    return this->prefix;
+}
+
 std::string Contact::toString() {
     std::string text = "";
     int index = 0;
@@ -46,5 +48,5 @@ std::string Contact::toString() {
         index++;
     }
 
-    return this->prefix +  " " + this->name + text; 
+    return this->getPrefix() +  " " + this->getName() + text; 
 }
