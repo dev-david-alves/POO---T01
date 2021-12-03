@@ -1,20 +1,17 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
+#include <map>
 
 #include "../Contato/contact.hpp"
 
 class Agenda {
     private:
-        std::vector<Contact> contacts;
-
-        // returns the position of the contact with that name in the vector or -1 if it does not exist.
-        int findPosByName(std::string name);
+        std::map<std::string, Contact> contacts;
 
         // merge the phones
 
-        void mergePhones(int pos, Contact contact);
+        void mergePhones(Contact contact);
 
     public:
         Agenda() {}
@@ -34,13 +31,10 @@ class Agenda {
         void rmContact(std::string name);
 
         // build a helper list by looking in each contact's .toString()
-        std::vector<Contact> search(std::string pattern);
+        std::map<std::string, Contact> search(std::string pattern);
 
         // Only used to print the search results        
-        void printSearch(std::vector<Contact> result);
-
-        // get the list of contacts
-        std::vector<Contact> getContacts();
+        void printSearch(std::map<std::string, Contact> result);
 
         std::string toString();
 };
