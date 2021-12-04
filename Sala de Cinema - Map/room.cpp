@@ -1,30 +1,36 @@
-#pragma once
-
 #include "room.hpp"
 
-int Room::findClient(std::string id) {
-    int index = 0; 
-    for (auto value: this->getSeats()) {
-        if (value != nullptr && value->getId() == id) {
-            return index;
-        }
+Room::Room (int capacity) {
+    std::shared_ptr<Client> client;
+    for(int i = 0; i < capacity; i++) {
+        this->seats.insert(std::pair<int, std::shared_ptr<Client>>(i, client));
+    }
 
-        index++;
+    std::cout << "Room created with " << capacity << " seats.\n";
+    this->toString();
+}
+
+int Room::findClient(std::string id) {
+    for(auto itr = this->seats.begin(); itr != this->seats.end(); itr++) {
+        if(itr->second != nullptr && itr->second->getId() == id) {
+            return itr->first;
+        }
     }
 
     return -1;
 }
 
-std::vector<std::shared_ptr<Client>> Room::getSeats() {
-    return seats;
-}
-
 void Room::setSeat(int index, std::shared_ptr<Client> client) {
-    this->seats[index] = client;
+    auto itr = this->seats.find(index);
+    if(itr != this->seats.end()) {
+        itr->second = client;
+    }
 }
 
 bool Room::reserve(std::string id, std::string fone, int index){
-    if(index < 0 || index >= (int) this->getSeats().size()) {
+    auto itr = this->seats.find(index);
+
+    if(itr == this->seats.end()) {
         std::cout << "Cannot register on seat " << index << " cause this is an invalid seat.\n";
         return false;
     }
@@ -34,7 +40,7 @@ bool Room::reserve(std::string id, std::string fone, int index){
         return false;
     }
 
-    if(this->getSeats()[index] != nullptr) {
+    if(itr->second != nullptr) {
         std::cout << "Cannot register on seat " << index << " cause this seat is already taken.\n";
         return false;
     }
@@ -63,11 +69,11 @@ void Room::cancel(std::string id) {
 }
 
 void Room::toString() {
-    for(auto seat: this->getSeats()) {
-        if(seat == nullptr) {
+    for(auto itr = this->seats.begin(); itr != this->seats.end(); itr++) {
+        if(itr->second == nullptr) {
             std::cout << " - ";
         } else {
-            std::cout << "[" << seat->getId() << " " << seat->getFone() << "] ";
+            std::cout << "[" << itr->second->getId() << " " << itr->second->getFone() << "] ";
         }
     }
 
