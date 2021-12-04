@@ -1,6 +1,14 @@
-#pragma once
-
 #include "room.hpp"
+
+Room::Room(int capacity) {
+    std::shared_ptr<Client> client;
+    for(int i = 0; i < capacity; i++) {
+        seats.push_back(client);
+    }
+
+    std::cout << "Room created with " << capacity << " seats.\n";
+    this->toString();
+}
 
 int Room::findClient(std::string id) {
     int index = 0; 

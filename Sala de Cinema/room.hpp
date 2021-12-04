@@ -4,20 +4,14 @@
 #include <vector>
 #include <memory>
 
+#include "client.hpp"
+
 class Room {
     private:
         std::vector<std::shared_ptr<Client>> seats;
         
     public:
-        Room (int capacity = 0) {
-           std::shared_ptr<Client> client;
-            for(int i = 0; i < capacity; i++) {
-                seats.push_back(client);
-            }
-
-            std::cout << "Room created with " << capacity << " seats.\n";
-            this->toString();
-        }
+        Room(int capacity = 0);
 
         std::vector<std::shared_ptr<Client>> getSeats();
 

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "client.hpp"
 
 std::string Client::getId() {

@@ -1,5 +1,4 @@
-#include "client.cpp"
-#include "room.cpp"
+#include "room.hpp"
 
 int main() {
 
