@@ -4,6 +4,8 @@
 #include <list>
 #include <memory>
 
+#include "kid.hpp"
+
 class Trampoline {
     private:
         std::list<std::shared_ptr<Kid>> waiting;

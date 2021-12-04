@@ -1,5 +1,4 @@
-#include "kid.cpp"
-#include "trampoline.cpp"
+#include "trampoline.hpp"
 
 int main() {
     std::shared_ptr<Kid> jose(new Kid("jose", 10));

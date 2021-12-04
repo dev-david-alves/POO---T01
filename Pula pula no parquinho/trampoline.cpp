@@ -1,5 +1,3 @@
-#pragma once
-
 #include "trampoline.hpp"
 
 // put on the waiting list
