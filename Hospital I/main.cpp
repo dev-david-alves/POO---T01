@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <memory>
 
 class MessageException : public std::exception {
    std::string message;
@@ -13,239 +14,220 @@ class MessageException : public std::exception {
         }
 };
 
-class doctor;
-class Patient;
-class hospital;
+class IMedico;
 
-class Doctor {
-    std::string id;
-    std::string specialty;
-    std::map<std::string, Patient*> patients;
+class IPaciente {
+    public:
+        virtual void addMedico(IMedico *medico) = 0;
+        virtual void removerMedico(std::string idMedico) = 0;
+
+        virtual std::string getId() = 0;
+        virtual std::string getDiagnostico() = 0;
+        virtual std::map<std::string, IMedico*> getMedicos() = 0;
+        virtual void toString() = 0;
+};
+
+class IMedico {
+    public:
+        virtual void addPaciente(IPaciente *paciente) = 0;
+        virtual void removerPaciente(std::string idPaciente) = 0;
+
+        virtual std::string getId() = 0;
+        virtual std::string getClasse() = 0;
+        virtual std::map<std::string, IPaciente*> getPacientes() = 0;
+        virtual void toString() = 0;
+};
+
+class Paciente: public IPaciente {
+    protected:
+        std::string sender;
+        std::string diagnostico;
+        std::map<std::string, IMedico*> medicos;
 
     public:
-        Doctor(std::string name, std::string specialty) : id(name), specialty(specialty) {}
-        
-        //Link patients and doctors.
-        //Two doctors of the same specialty cannot be responsible for the same patient.
-        //The patient must not enter the doctor's list twice and vice versa.
-        //If the patient is already in the doctor's list, throw exception.
-        void addPatient(Patient* patient) {
-            if(patients.find(patient->getId()) != patients.end()) {
-                throw std::runtime_error("Patient already in doctor's list");
+        Paciente() {}
+        Paciente(std::string sender, std::string diagnostico) : sender(sender), diagnostico(diagnostico) {}
+
+        void addMedico(IMedico *medico) {
+            if(medicos.find(medico->getId()) != medicos.end()) {
+                throw MessageException("Medico ja existe");
             }
-            
-            patients.insert(std::pair<std::string, Patient*>(patient->getId(), patient));
+
+            medicos.insert(std::pair<std::string, IMedico*>(medico->getId(), medico));
         }
 
-        //Remove patient from doctor's list.
-        //If the patient is not in the doctor's list, throw exception.
-        void removePatient(std::string patientId) {
-            if(patients.find(patientId) == patients.end()) {
-                throw std::runtime_error("Patient not in doctor's list");
+        void removerMedico(std::string idMedico) {
+            if(medicos.find(idMedico) == medicos.end()) {
+                throw MessageException("Medico nao existe");
             }
-            
-            patients.erase(patientId);
-        }
 
-        // Getters
+            medicos.erase(idMedico);
+        }
 
         std::string getId() {
-            return this->id;
+            return sender;
         }
 
-        std::string getSpecialty() {
-            return this->specialty;
+        std::string getDiagnostico() {
+            return diagnostico;
         }
 
-        std::vector<Patient> getPatients() {
-            std::vector<Patient> patients;
-            for (auto it = this->patients.begin(); it != this->patients.end(); it++) {
-                patients.push_back(it->second);
+        std::map<std::string, IMedico*> getMedicos() {
+            return medicos;
+        }
+
+        void toString() {
+            std::cout << "Pac: " << sender << ": " << diagnostico << " Meds: [ ";
+
+            for (auto it = medicos.begin(); it != medicos.end(); ++it) {
+                std::cout << it->first << " ";
             }
 
-            return patients;
-        }
-
-        // Prints the doctor's information
-
-        std::string toString() {
-            //Med: bisturi:cirurgia Pacs: []
-            std::string result = "Med: " + id + ":" + specialty + " Pacs: [";
-            for (auto it = patients.begin(); it != patients.end(); it++) {
-                result += it->second.getId() + " ";
-            }
-            result += "]";
-
-            return result;
+            std::cout << "]\n";
         }
 };
 
-class Patient{
-    std::string patientId;
-    std::string diagnosis;
-
-    std::map<std::string, Doctor*> doctors;
+class Medico: public IMedico {
+    protected:
+        std::string sender;
+        std::string classe;
+        std::map<std::string, IPaciente*> pacientes;
 
     public:
-        Patient(std::string patientId, std::string diagnosis) : patientId(patientId), diagnosis(diagnosis) {}
+        Medico() {}
+        Medico(std::string sender, std::string classe): sender(sender), classe(classe) {}
 
-        //Link patients and doctors.
-        //Two doctors of the same specialty cannot be responsible for the same patient.
-        //The patient must not enter the doctor's list twice and vice versa.
-        //If the patient is already in the doctor's list, throw exception.
-        void addDoctor(Doctor* doctor) {
-            if(doctors.find(doctor->getId()) != doctors.end()) {
-                throw std::runtime_error("Doctor already in patient's list");
+        void addPaciente(IPaciente *paciente) {
+            if(pacientes.find(paciente->getId()) != pacientes.end()) {
+                throw MessageException("Paciente ja existe");
             }
-            
-            doctors.insert(std::pair<std::string, Doctor*>(doctor->getId(), doctor));
+
+            pacientes.insert(std::pair<std::string, IPaciente*>(paciente->getId(), paciente));
         }
 
-        //Remove patient from doctor's list.
-        //If the patient is not in the doctor's list, throw exception.
-        void removeDoctor(std::string doctorId) {
-            if (doctors.find(doctorId) == doctors.end()) {
-                throw std::runtime_error("Doctor not in patient's list");
+        void removerPaciente(std::string idPaciente) {
+            if(pacientes.find(idPaciente) == pacientes.end()) {
+                throw MessageException("Paciente nao existe");
             }
 
-            doctors.erase(doctorId);
+            pacientes.erase(idPaciente);
         }
 
         std::string getId() {
-            return this->id;
+            return sender;
         }
 
-        std::string getDiagnosis() {
-            return this->diagnosis;
+        std::string getClasse() {
+            return classe;
         }
 
-        std::vector<Doctor> getDoctors() {
-            std::vector<Doctor> doctors;
+        std::map<std::string, IPaciente*> getPacientes() {
+            return pacientes;
+        }
 
-            for (auto it = this->doctors.begin(); it != this->doctors.end(); it++) {
-                doctors.push_back(it->second);
+        void toString() {
+            std::cout << "Med: " << sender << ": " << classe << " Pacs: [ ";
+
+            for (auto it = pacientes.begin(); it != pacientes.end(); ++it) {
+                std::cout << it->first << " ";
             }
 
-            return doctors;
-        }
-
-        std::string toString() {
-            std::string result = "Pac: " + id + ":" + diagnosis + " Meds: [";
-            for (auto it = doctors.begin(); it != doctors.end(); it++) {
-                result += it->second.getId() + " ";
-            }
-            result += "]";
-
-            return result;
+            std::cout << "]\n";
         }
 };
 
 class Hospital {
-    std::map<std::string, Patient*> patients;
-    std::map<std::string, Doctor*> doctors;
+    private:
+        std::map<std::string, IPaciente*> pacientes;
+        std::map<std::string, IMedico*> medicos;
 
     public:
-        Hospital();
+        Hospital() {}
 
-        void addPatient(std::string patientId, std::string patientDiagnosis)) {
-            Patient* patient(patientId, patientDiagnosis);
-
-            if(patients.find(patientId) != patients.end()) {
-                throw std::runtime_error("Patient already in hospital");
+        void removerPaciente(std::string sender) {
+            if(pacientes.find(sender) == pacientes.end()) {
+                throw MessageException("Paciente nao existe");
             }
 
-            patients.insert(std::pair<std::string, Patient*>(patientId, patient));
+            pacientes.erase(sender);
         }
 
-        void addDoctor(std::string doctorId, std::string doctorSpecialty) {
-            Doctor* doctor(doctorId, doctorSpecialty);
-
-            if(doctors.find(doctorId) != doctors.end()) {
-                throw std::runtime_error("Doctor already in hospital");
+        void removerMedico(std::string sender) {
+            if(medicos.find(sender) == medicos.end()) {
+                throw MessageException("Medico nao existe");
             }
 
-            doctors.insert(std::pair<std::string, Doctor*>(doctorId, doctor));
+            medicos.erase(sender);
         }
 
-        void removePatient(std::string patientId) {
-            if(patients.find(patientId) == patients.end()) {
-                throw std::runtime_error("Patient not in hospital");
+        void addPaciente(IPaciente *paciente) {
+            if(pacientes.find(paciente->getId()) != pacientes.end()) {
+                throw MessageException("Paciente ja existe");
             }
 
-            patients.erase(patientId);
+            pacientes.insert(std::pair<std::string, IPaciente*>(paciente->getId(), paciente));
         }
 
-        void removeDoctor(std::string doctorId) {
-            if(doctors.find(doctorId) == doctors.end()) {
-                throw std::runtime_error("Doctor not in hospital");
+        void addMedico(IMedico *medico) {
+            if(medicos.find(medico->getId()) != medicos.end()) {
+                throw MessageException("Medico ja existe");
             }
 
-            doctors.erase(doctorId);
+            medicos.insert(std::pair<std::string, IMedico*>(medico->getId(), medico));
         }
+
+        void vincular(std::string nomeMedico, std::string nomePaciente) {
+            std::string classe = medicos[nomeMedico]->getClasse();
+            std::map<std::string, IMedico*> meds = pacientes[nomePaciente]->getMedicos();
         
-        void tie(std::string doctorId, std::string patientId) {
-            if(patients.find(patientId) == patients.end()) {
-                throw std::runtime_error("Patient not in hospital");
+            for (auto it = meds.begin(); it != meds.end(); ++it) {
+                if (it->second->getClasse() == classe) {
+                    throw MessageException("Paciente ja possui medico da mesma classe");
+                    return;
+                }
             }
 
-            if(doctors.find(doctorId) == doctors.end()) {
-                throw std::runtime_error("Doctor not in hospital");
-            }
-
-            patients[patientId]->addDoctor(doctors[doctorId]);
-            doctors[doctorId]->addPatient(patients[patientId]);
+            pacientes[nomePaciente]->addMedico(medicos[nomeMedico]);
+            medicos[nomeMedico]->addPaciente(pacientes[nomePaciente]);
         }
 
-        Patient* getPatient(std::string patientId) {
-            if(patients.find(patientId) == patients.end()) {
-                throw std::runtime_error("Patient not in hospital");
+        void toString() {
+            for(auto it = pacientes.begin(); it != pacientes.end(); ++it) {
+                it->second->toString();
             }
 
-            return patients[patientId];
-        }
-
-        Doctor* getDoctor(std::string doctorId) {
-            if(doctors.find(doctorId) == doctors.end()) {
-                throw std::runtime_error("Doctor not in hospital");
+            for(auto it = medicos.begin(); it != medicos.end(); ++it) {
+                it->second->toString();
             }
-
-            return doctors[doctorId];
-        }
-
-        std::string toString() {
-            std::string result = "";
-
-            for (auto it = patients.begin(); it != patients.end(); it++) {
-                result += it->second.toString() + "\n";
-            }
-
-            for (auto it = doctors.begin(); it != doctors.end(); it++) {
-                result += it->second.toString() + "\n";
-            }
-
-            return result;
         }
 };
 
 int main () {
-
-    // catch the exceptions
-
     try {
-        Hospital hospital = new Hospital();
+        Hospital hospital;
 
-        hospital.addPatient("fred", "fatura");
-        hospital.addPatient("alvis", "avc");
-        hospital.addPatient("goku", "hemorragia");
-        hospital.addPatient("silva", "sinusite");
+        hospital.addPaciente(new Paciente("fred", "fatura"));
+        hospital.addPaciente(new Paciente("alvis", "avc"));
+        hospital.addPaciente(new Paciente("goku", "hemorragia"));
+        hospital.addPaciente(new Paciente("silva", "sinusite"));
 
-        hospital.addDoctor("bisturi", "cirurgia");
-        hospital.addDoctor("snif", "alergologia");
-        hospital.addDoctor("facada", "cirurgia");
+        hospital.addMedico(new Medico("bisturi", "cirurgia"));
+        hospital.addMedico(new Medico("snif", "alergologia"));
+        hospital.addMedico(new Medico("facada", "cirurgia"));
+
+        hospital.toString();
+        std::cout << "\n";
+
+        hospital.vincular("bisturi", "fred");
+        hospital.vincular("bisturi", "alvis");
+        hospital.vincular("bisturi", "goku");
+        hospital.vincular("snif", "silva");
+        hospital.vincular("snif", "alvis");
+        // hospital.vincular("facada", "goku");
 
         hospital.toString();
     } catch (MessageException &e) {
-        std::cout << e.what() << '\n';
+        std::cout << e.what() << std::endl;
     }
 
     return 0;
